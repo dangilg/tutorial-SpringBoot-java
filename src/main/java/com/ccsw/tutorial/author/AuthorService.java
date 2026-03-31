@@ -27,13 +27,15 @@ public interface AuthorService {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @throws NoIdFoundException si el ID no está en la BD
      */
-    void save(Long id, AuthorDto dto);
+    void save(Long id, AuthorDto dto) throws NoIdFoundException;
 
     /**
      * Método para crear o actualizar un {@link Author}
      *
      * @param id PK de la entidad
+     * @throws NoIdFoundException si el Id no está en la BD
      */
     void delete(Long id) throws NoIdFoundException;
 

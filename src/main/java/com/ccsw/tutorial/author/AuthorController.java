@@ -54,7 +54,7 @@ public class AuthorController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) {
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws NoIdFoundException {
 
         this.authorService.save(id, dto);
     }

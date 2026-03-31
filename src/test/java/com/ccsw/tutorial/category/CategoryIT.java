@@ -82,14 +82,14 @@ public class CategoryIT {
     }
 
     @Test
-    public void modifyWithNotExistIdShouldInternalError() {
+    public void modifyWithNotExistIdShouldNotFoundError() {
 
         CategoryDto dto = new CategoryDto();
         dto.setName(NEW_CATEGORY_NAME);
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CATEGORY_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     public static final Long DELETE_CATEGORY_ID = 2L;
@@ -105,7 +105,7 @@ public class CategoryIT {
     }
 
     @Test
-    public void deleteWithNotExistsIdShouldInternalError() {
+    public void deleteWithNotExistsIdShouldNotFoundError() {
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CATEGORY_ID, HttpMethod.DELETE, null, Void.class);
 

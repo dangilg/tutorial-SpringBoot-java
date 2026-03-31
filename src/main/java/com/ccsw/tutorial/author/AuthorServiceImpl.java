@@ -36,7 +36,7 @@ public class AuthorServiceImpl implements AuthorService {
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, AuthorDto data) {
+    public void save(Long id, AuthorDto data) throws NoIdFoundException {
 
         Author author;
 
@@ -46,6 +46,9 @@ public class AuthorServiceImpl implements AuthorService {
             author = this.authorRepository.findById(id).orElse(null);
         }
 
+        if (author == null) {
+            throw new NoIdFoundException();
+        }
         BeanUtils.copyProperties(data, author, "id");
 
         this.authorRepository.save(author);

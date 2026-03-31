@@ -52,8 +52,8 @@ public class CategoryController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Category")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) {
-        System.out.println(dto);
+    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) throws NoIdFoundException {
+
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
     }
@@ -66,7 +66,7 @@ public class CategoryController {
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     //esto se supone q es para q el swagger detecte q devuelve un error y lo muestre en su documentacion
-    
+
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
     public void delete(@PathVariable("id") Long id) throws NoIdFoundException {
         this.categoryService.delete(id);

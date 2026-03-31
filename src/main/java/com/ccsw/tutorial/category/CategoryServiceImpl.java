@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
      * {@inheritDoc}
      */
     @Override
-    public Category save(Long id, CategoryDto dto) {
+    public Category save(Long id, CategoryDto dto) throws NoIdFoundException {
 
         Category category;
 
@@ -42,7 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             category = this.categoryRepository.findById(id).orElse(null);
         }
-
+        if (category == null) {
+            throw new NoIdFoundException();
+        }
         category.setName(dto.getName());
 
         this.categoryRepository.save(category);

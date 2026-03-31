@@ -25,7 +25,7 @@ public interface CategoryService {
      * @param id PK de la entidad
      * @param dto datos de la entidad
      */
-    Category save(Long id, CategoryDto dto);
+    Category save(Long id, CategoryDto dto) throws NoIdFoundException;
 
     /**
      * Método para borrar una {@link Category}
