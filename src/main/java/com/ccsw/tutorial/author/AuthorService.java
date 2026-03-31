@@ -3,6 +3,7 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.exceptions.NoIdFoundException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -34,6 +35,6 @@ public interface AuthorService {
      *
      * @param id PK de la entidad
      */
-    void delete(Long id) throws Exception;
+    void delete(Long id) throws NoIdFoundException;
 
 }

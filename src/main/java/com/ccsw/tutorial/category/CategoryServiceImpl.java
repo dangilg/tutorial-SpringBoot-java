@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void delete(Long id) throws NoIdFoundException {
         if (this.categoryRepository.findById(id).orElse(null) == null) {
-            throw new NoIdFoundException("Can't Delete a Category that doesn't exist");
+            throw new NoIdFoundException();
         }
 
         this.categoryRepository.deleteById(id);
