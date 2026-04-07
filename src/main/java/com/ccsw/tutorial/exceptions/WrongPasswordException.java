@@ -3,11 +3,11 @@ package com.ccsw.tutorial.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class NotValidUsernameException extends RuntimeException {
-    public NotValidUsernameException() {
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+public class WrongPasswordException extends RuntimeException {
+    public WrongPasswordException() {
         super();
-        String message = "USER ALREADY EXIST";
+        String message = "USER OR PASSWORD NOT VALID";
         System.err.println(message);
     }
 }
