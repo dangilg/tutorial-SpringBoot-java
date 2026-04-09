@@ -41,7 +41,6 @@ public class UserAuthController {
     @ApiResponses({ @ApiResponse(responseCode = "409", description = "User already exists") })
     public AuthResponseDto register(@RequestBody UserDto dto) throws NotValidUsernameException {
         User user = userAuthService.save(dto);
-        System.out.println("antes del return");
         String token = jwtService.generateToken(dto.getUsername());
         AuthResponseDto response = new AuthResponseDto();
         response.setToken(token);

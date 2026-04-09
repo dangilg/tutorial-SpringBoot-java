@@ -52,4 +52,5 @@ public class UserAuthServiceImpl implements UserAuthService {
             throw new WrongPasswordException();
         }
     }
+
 }

@@ -2,7 +2,7 @@ package com.ccsw.tutorial.userAuth.model;
 
 public class AuthResponseDto {
 
-    private String token;
+    private String token = "";
 
     public String getToken() {
         return token;

@@ -9,4 +9,4 @@ INSERT INTO author(name, nationality) VALUES ('Perepau Llistosella', 'ES');
 INSERT INTO author(name, nationality) VALUES ('Michael Kiesling', 'DE');
 INSERT INTO author(name, nationality) VALUES ('Phil Walker-Harding', 'US');
 
-INSERT INTO users(username,password) VALUES ('user','$2a$10$jgLUwUxt9bjK4DXhHGJQVeyazaJHoc/1hOODzVixa8Hih45hPJ0WO');
+INSERT INTO users(username,password) VALUES ('admin','$2a$10$8uHkkGEoDlS7porfXTQb1OIiwFT2O9iCmOIUvsf8fJghVcze5hGn2');

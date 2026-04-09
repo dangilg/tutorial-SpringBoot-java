@@ -65,8 +65,6 @@ public class CategoryController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    //esto se supone q es para q el swagger detecte q devuelve un error y lo muestre en su documentacion
-
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
     public void delete(@PathVariable("id") Long id) throws NoIdFoundException {
         this.categoryService.delete(id);
