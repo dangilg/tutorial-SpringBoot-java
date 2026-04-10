@@ -27,6 +27,15 @@ public class AuthorServiceImpl implements AuthorService {
      * {@inheritDoc}
      */
     @Override
+    public Author get(Long id) {
+
+        return this.authorRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page<Author> findPage(AuthorSearchDto dto) {
 
         return this.authorRepository.findAll(dto.getPageable().getPageable());
@@ -43,7 +52,7 @@ public class AuthorServiceImpl implements AuthorService {
         if (id == null) {
             author = new Author();
         } else {
-            author = this.authorRepository.findById(id).orElse(null);
+            author = this.get(id);
         }
 
         if (author == null) {
@@ -60,11 +69,19 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void delete(Long id) throws NoIdFoundException {
 
-        if (this.authorRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new NoIdFoundException();
         }
 
         this.authorRepository.deleteById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Author> findAll() {
+
+        return (List<Author>) this.authorRepository.findAll();
+    }
 }
