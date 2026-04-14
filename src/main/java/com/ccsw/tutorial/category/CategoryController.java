@@ -4,7 +4,10 @@ import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotValidTokenException;
 import com.ccsw.tutorial.game.GameRepository;
+import com.ccsw.tutorial.security.JwtService;
+import io.jsonwebtoken.Header;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -35,6 +38,9 @@ public class CategoryController {
     @Autowired
     GameRepository gameRepository;
 
+    @Autowired
+    JwtService tokenService;
+
     /**
      * Método para recuperar todas las {@link Category}
      *
@@ -57,8 +63,10 @@ public class CategoryController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Category")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) throws NoIdFoundException {
-
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
+    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
+        String token = authorization.replace("Bearer", "");
+        this.tokenService.isTokenValid(token);
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
     }
@@ -70,17 +78,17 @@ public class CategoryController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
-    public void delete(@PathVariable("id") Long id) throws NoIdFoundException {
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
+    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
 
+        String token = authorization.replace("Bearer", "");
+        this.tokenService.isTokenValid(token);
         this.categoryService.delete(id);
     }
 
     @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
     @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
     public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) {
-        //hay q comprobar primero q el user tiene token valido
-
         if (this.gameRepository.existsByCategoryId(id)) {
             return new DeleteCheckResponseDto(false, "IN_USE");
         } else {

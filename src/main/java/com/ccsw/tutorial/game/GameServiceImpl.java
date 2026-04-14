@@ -55,7 +55,7 @@ public class GameServiceImpl implements GameService {
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, GameDto dto) {
+    public void save(Long id, GameDto dto) throws NoIdFoundException {
 
         Game game;
 
