@@ -1,5 +1,6 @@
 package com.ccsw.tutorial.security;
 
+import com.ccsw.tutorial.exceptions.NotValidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,7 +39,7 @@ public class JwtService {
             extractAllClaims(token);
             return true;
         } catch (Exception e) {
-            return false;
+            throw new NotValidTokenException();
         }
     }
 

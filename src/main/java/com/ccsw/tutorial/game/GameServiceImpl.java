@@ -1,5 +1,8 @@
 package com.ccsw.tutorial.game;
 
+import com.ccsw.tutorial.author.model.Author;
+import com.ccsw.tutorial.category.model.Category;
+import com.ccsw.tutorial.exceptions.NoIdFoundException;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 import com.ccsw.tutorial.author.AuthorService;
@@ -36,7 +39,8 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public List<Game> find(String title, Long idCategory) {
-
+        System.out.println("titulo:" + title);
+        System.out.println("idCategory:" + idCategory);
         GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
         GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
 
@@ -44,7 +48,7 @@ public class GameServiceImpl implements GameService {
         // Desde la versión 3.5.0 de Spring Boot, la nueva manera es
         Specification<Game> spec = titleSpec.and(categorySpec);
 
-        return (List<Game>) this.gameRepository.findAll();
+        return (List<Game>) this.gameRepository.findAll(spec);
     }
 
     /**
@@ -61,10 +65,21 @@ public class GameServiceImpl implements GameService {
             game = this.gameRepository.findById(id).orElse(null);
         }
 
+        if (game == null) {
+            throw new NoIdFoundException();
+        }
         BeanUtils.copyProperties(dto, game, "id", "author", "category");
-
-        game.setAuthor(authorService.get(dto.getAuthor().getId()));
-        game.setCategory(categoryService.get(dto.getCategory().getId()));
+        Author author = authorService.get(dto.getAuthor().getId());
+        //para evitar tener q esperar en caso de q el author ya sea null
+        if (author == null) {
+            throw new NoIdFoundException();
+        }
+        Category category = categoryService.get(dto.getCategory().getId());
+        if (category == null) {
+            throw new NoIdFoundException();
+        }
+        game.setAuthor(author);
+        game.setCategory(category);
 
         this.gameRepository.save(game);
     }

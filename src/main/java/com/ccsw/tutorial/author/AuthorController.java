@@ -3,7 +3,9 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.game.GameRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
@@ -30,6 +32,9 @@ public class AuthorController {
 
     @Autowired
     ModelMapper mapper;
+
+    @Autowired
+    GameRepository gameRepository;
 
     /**
      * Método para recuperar un listado paginado de {@link Author}
@@ -83,6 +88,18 @@ public class AuthorController {
         List<Author> authors = this.authorService.findAll();
 
         return authors.stream().map(e -> mapper.map(e, AuthorDto.class)).collect(Collectors.toList());
+    }
+
+    @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
+    @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
+    public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) {
+        //hay q comprobar primero q el user tiene token valido
+
+        if (this.gameRepository.existsByAuthorId(id)) {
+            return new DeleteCheckResponseDto(false, "IN_USE");
+        } else {
+            return new DeleteCheckResponseDto(true, "");
+        }
     }
 
 }

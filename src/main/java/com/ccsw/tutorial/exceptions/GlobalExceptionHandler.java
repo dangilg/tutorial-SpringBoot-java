@@ -34,4 +34,10 @@ public class GlobalExceptionHandler {
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(), exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(NotValidTokenException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotValidTokenException(NotValidTokenException exception) {
+        ErrorResponseDto response = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
 }

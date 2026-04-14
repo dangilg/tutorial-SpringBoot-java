@@ -1,5 +1,6 @@
 package com.ccsw.tutorial.game;
 
+import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 

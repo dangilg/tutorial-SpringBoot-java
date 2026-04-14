@@ -2,7 +2,9 @@ package com.ccsw.tutorial.category;
 
 import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.game.GameRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -29,6 +31,9 @@ public class CategoryController {
 
     @Autowired
     ModelMapper mapper;
+
+    @Autowired
+    GameRepository gameRepository;
 
     /**
      * Método para recuperar todas las {@link Category}
@@ -67,7 +72,19 @@ public class CategoryController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
     public void delete(@PathVariable("id") Long id) throws NoIdFoundException {
+
         this.categoryService.delete(id);
     }
 
+    @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
+    @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
+    public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) {
+        //hay q comprobar primero q el user tiene token valido
+
+        if (this.gameRepository.existsByCategoryId(id)) {
+            return new DeleteCheckResponseDto(false, "IN_USE");
+        } else {
+            return new DeleteCheckResponseDto(true, "");
+        }
+    }
 }

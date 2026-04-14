@@ -2,6 +2,7 @@ package com.ccsw.tutorial.game;
 
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
+import com.ccsw.tutorial.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,9 @@ public class GameController {
     @Autowired
     ModelMapper mapper;
 
+    @Autowired
+    JwtService tokenService;
+
     /**
      * Método para recuperar una lista de {@link Game}
      *
@@ -51,8 +55,8 @@ public class GameController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Game")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) {
-
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto, @RequestHeader("Authorization") String token) {
+        tokenService.isTokenValid(token);
         gameService.save(id, dto);
     }
 
