@@ -5,6 +5,7 @@ import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
 import com.ccsw.tutorial.exceptions.NotValidTokenException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.security.JwtService;
 import io.jsonwebtoken.Header;
@@ -65,7 +66,7 @@ public class CategoryController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
     public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.replace("Bearer", "");
+        String token = authorization.substring(7);
         this.tokenService.isTokenValid(token);
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
@@ -78,11 +79,15 @@ public class CategoryController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
+            @ApiResponse(responseCode = "409", description = "cant delete a category in use") })
+    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
 
-        String token = authorization.replace("Bearer", "");
+        String token = authorization.substring(7);
         this.tokenService.isTokenValid(token);
+        if (!isDeleteable(id).isCanDelete()) {
+            throw new NotDeleteableException(isDeleteable(id).getReason());
+        }
         this.categoryService.delete(id);
     }
 

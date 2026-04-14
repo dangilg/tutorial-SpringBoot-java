@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(NotDeleteableException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotDeletableException(NotDeleteableException exception) {
+        ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(), exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 }

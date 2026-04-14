@@ -5,6 +5,7 @@ import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.exceptions.NotValidTokenException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.security.JwtService;
@@ -68,7 +69,7 @@ public class AuthorController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
     public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.replace("Bearer", "");
+        String token = authorization.substring(7);
         this.tokenService.isTokenValid(token);
         this.authorService.save(id, dto);
     }
@@ -80,10 +81,14 @@ public class AuthorController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Author")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.replace("Bearer", "");
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
+            @ApiResponse(responseCode = "409", description = "cant delete an Author in use") })
+    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
+        String token = authorization.substring(7);
         this.tokenService.isTokenValid(token);
+        if (!isDeleteable(id).isCanDelete()) {
+            throw new NotDeleteableException(isDeleteable(id).getReason());
+        }
         this.authorService.delete(id);
     }
 
