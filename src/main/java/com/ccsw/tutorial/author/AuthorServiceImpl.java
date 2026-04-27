@@ -84,4 +84,5 @@ public class AuthorServiceImpl implements AuthorService {
 
         return (List<Author>) this.authorRepository.findAll();
     }
+
 }
