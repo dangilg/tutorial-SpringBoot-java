@@ -4,6 +4,7 @@ import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.pagination.PageableRequest;
 import com.ccsw.tutorial.config.ResponsePage;
+import com.ccsw.tutorial.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,12 +26,13 @@ public class AuthorIT {
     public static final String LOCALHOST = "http://localhost:";
     public static final String SERVICE_PATH = "/author";
 
-    public static final Long DELETE_AUTHOR_ID = 6L;
+    public static final Long DELETEABLE_AUTHOR_ID = 6L;
+    public static final Long NOT_DELETEABLE_AUTHOR_ID = 1L;
     public static final Long MODIFY_AUTHOR_ID = 3L;
     public static final String NEW_AUTHOR_NAME = "Nuevo Autor";
     public static final String NEW_NATIONALITY = "Nueva Nacionalidad";
 
-    private static final int TOTAL_AUTHORS = 6;
+    private static final int TOTAL_AUTHORS = 7;
     private static final int PAGE_SIZE = 5;
 
     @LocalServerPort
@@ -39,8 +41,17 @@ public class AuthorIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private JwtService tokenService;
+
     ParameterizedTypeReference<ResponsePage<AuthorDto>> responseTypePage = new ParameterizedTypeReference<ResponsePage<AuthorDto>>() {
     };
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders ret = new HttpHeaders();
+        ret.set("Authorization", "Bearer " + tokenService.generateToken("admin"));
+        return ret;
+    }
 
     @Test
     public void findFirstPageWithFiveSizeShouldReturnFirstFiveResults() {
@@ -72,7 +83,7 @@ public class AuthorIT {
 
     @Test
     public void saveWithoutIdShouldCreateNewAuthor() {
-
+        HttpHeaders headers = getHeaders();
         long newAuthorId = TOTAL_AUTHORS + 1;
         long newAuthorSize = TOTAL_AUTHORS + 1;
 
@@ -80,7 +91,7 @@ public class AuthorIT {
         dto.setName(NEW_AUTHOR_NAME);
         dto.setNationality(NEW_NATIONALITY);
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
         AuthorSearchDto searchDto = new AuthorSearchDto();
         searchDto.setPageable(new PageableRequest(0, (int) newAuthorSize));
@@ -96,13 +107,29 @@ public class AuthorIT {
     }
 
     @Test
-    public void modifyWithExistIdShouldModifyAuthor() {
+    public void saveWithNotValidTokenShouldThrowException() {
+        HttpHeaders headers = new HttpHeaders();
+        String token = tokenService.generateToken("admin");
+        String badToken = token.replace("e", "l");
+        headers.set("Authorization", "Bearer " + badToken);
 
         AuthorDto dto = new AuthorDto();
         dto.setName(NEW_AUTHOR_NAME);
         dto.setNationality(NEW_NATIONALITY);
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + MODIFY_AUTHOR_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void modifyWithExistIdShouldModifyAuthor() {
+        HttpHeaders headers = getHeaders();
+        AuthorDto dto = new AuthorDto();
+        dto.setName(NEW_AUTHOR_NAME);
+        dto.setNationality(NEW_NATIONALITY);
+
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + MODIFY_AUTHOR_ID, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
         AuthorSearchDto searchDto = new AuthorSearchDto();
         searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
@@ -120,23 +147,40 @@ public class AuthorIT {
 
     @Test
     public void modifyWithNotExistIdShouldThrowException() {
-
+        HttpHeaders headers = getHeaders();
         long authorId = TOTAL_AUTHORS + 1;
 
         AuthorDto dto = new AuthorDto();
         dto.setName(NEW_AUTHOR_NAME);
 
-        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + authorId, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + authorId, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void deleteWithExistsIdShouldDeleteCategory() {
+    public void modifyWithNotValidTokenShouldThrowException() {
+        HttpHeaders headers = new HttpHeaders();
+        String token = tokenService.generateToken("admin");
+        String badToken = token.replace("e", "l");
+        headers.set("Authorization", "Bearer " + badToken);
 
+        long authorId = TOTAL_AUTHORS + 1;
+
+        AuthorDto dto = new AuthorDto();
+        dto.setName(NEW_AUTHOR_NAME);
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + authorId, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
+    }
+
+    @Test
+    public void deleteWithExistsIdAndDeleteableAuthorShouldDeleteAuthor() {
+        HttpHeaders headers = getHeaders();
         long newAuthorsSize = TOTAL_AUTHORS - 1;
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETE_AUTHOR_ID, HttpMethod.DELETE, null, Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETEABLE_AUTHOR_ID, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
 
         AuthorSearchDto searchDto = new AuthorSearchDto();
         searchDto.setPageable(new PageableRequest(0, TOTAL_AUTHORS));
@@ -149,16 +193,38 @@ public class AuthorIT {
 
     @Test
     public void deleteWithNotExistsIdShouldThrowException() {
-
+        HttpHeaders headers = getHeaders();
         long deleteAuthorId = TOTAL_AUTHORS + 1;
 
-        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + deleteAuthorId, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + deleteAuthorId, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     ParameterizedTypeReference<List<AuthorDto>> responseTypeList = new ParameterizedTypeReference<List<AuthorDto>>() {
     };
+
+    @Test
+    public void deleteANonDeleteableAuthorShouldThrowException() {
+        HttpHeaders headers = getHeaders();
+
+        ResponseEntity<?> respone = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_DELETEABLE_AUTHOR_ID, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
+
+        assertEquals(HttpStatus.CONFLICT, respone.getStatusCode());
+
+    }
+
+    @Test
+    public void deleteADeleteableAuthorWithNotValidTokenShouldThrowException() {
+        HttpHeaders headers = new HttpHeaders();
+        String token = tokenService.generateToken("admin");
+        String badToken = token.replace("e", "l");
+        headers.set("Authorization", "Bearer " + badToken);
+
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETEABLE_AUTHOR_ID, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
 
     @Test
     public void findAllShouldReturnAllAuthor() {

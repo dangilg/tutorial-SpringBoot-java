@@ -3,16 +3,14 @@ package com.ccsw.tutorial.game;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.game.model.GameDto;
+import com.ccsw.tutorial.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -47,11 +45,20 @@ public class GameIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    JwtService tokenService;
+
     ParameterizedTypeReference<List<GameDto>> responseType = new ParameterizedTypeReference<List<GameDto>>() {
     };
 
     private String getUrlWithParams() {
         return UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(TITLE_PARAM, "{" + TITLE_PARAM + "}").queryParam(CATEGORY_ID_PARAM, "{" + CATEGORY_ID_PARAM + "}").encode().toUriString();
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders ret = new HttpHeaders();
+        ret.set("Authorization", "Bearer " + tokenService.generateToken("admin"));
+        return ret;
     }
 
     @Test
@@ -174,6 +181,7 @@ public class GameIT {
 
     @Test
     public void saveWithoutIdShouldCreateNewGame() {
+        HttpHeaders headers = getHeaders();
 
         GameDto dto = new GameDto();
         AuthorDto authorDto = new AuthorDto();
@@ -196,7 +204,7 @@ public class GameIT {
         assertNotNull(response);
         assertEquals(0, response.getBody().size());
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
         response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
 
@@ -206,6 +214,7 @@ public class GameIT {
 
     @Test
     public void modifyWithExistIdShouldModifyGame() {
+        HttpHeaders headers = getHeaders();
 
         GameDto dto = new GameDto();
         AuthorDto authorDto = new AuthorDto();
@@ -228,7 +237,7 @@ public class GameIT {
         assertNotNull(response);
         assertEquals(0, response.getBody().size());
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
         response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
 
@@ -239,13 +248,60 @@ public class GameIT {
 
     @Test
     public void modifyWithNotExistIdShouldThrowException() {
-
+        HttpHeaders headers = getHeaders();
         GameDto dto = new GameDto();
         dto.setTitle(NEW_TITLE);
 
-        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    @Test
+    public void saveWithNotValidTokenShouldThrowException() {
+        HttpHeaders headers = new HttpHeaders();
+        String token = tokenService.generateToken("admin");
+        String badToken = token.replace("e", "l");
+        headers.set("Authorization", "Bearer " + badToken);
+
+        GameDto dto = new GameDto();
+        AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(1L);
+
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(1L);
+
+        dto.setTitle(NEW_TITLE);
+        dto.setAge("18");
+        dto.setAuthor(authorDto);
+        dto.setCategory(categoryDto);
+
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void modifyWithNotValidTokenShouldThrowException() {
+        HttpHeaders headers = new HttpHeaders();
+        String token = tokenService.generateToken("admin");
+        String badToken = token.replace("e", "l");
+        headers.set("Authorization", "Bearer " + badToken);
+
+        GameDto dto = new GameDto();
+        AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(1L);
+
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(1L);
+
+        dto.setTitle(NEW_TITLE);
+        dto.setAge("18");
+        dto.setAuthor(authorDto);
+        dto.setCategory(categoryDto);
+
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + EXISTS_GAME_ID, HttpMethod.PUT, new HttpEntity<>(dto, headers), Void.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
 }
