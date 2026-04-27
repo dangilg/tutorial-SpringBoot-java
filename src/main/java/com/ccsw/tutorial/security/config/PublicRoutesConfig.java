@@ -40,6 +40,11 @@ PathPatternParser patternParser;
             //UserAuth
             new PublicRoute(POST,"/auth/signIn"),
             new PublicRoute(POST,"/auth/logIn")
+            ,
+            //Client
+            new PublicRoute(GET,"/client"),
+            new PublicRoute(GET,"/client/can-delete")
+
     );
 
     public List<PublicRoute> getPublicRoutes() {
