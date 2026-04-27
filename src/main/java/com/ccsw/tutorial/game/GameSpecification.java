@@ -21,7 +21,7 @@ public class GameSpecification implements Specification<Game> {
         if (criteria.getOperation().equalsIgnoreCase(":") && criteria.getValue() != null) {
             Path<String> path = getPath(root);
             if (path.getJavaType() == String.class) {
-                return builder.like(path, "%" + criteria.getValue() + "%");
+                return builder.like(builder.lower(path), "%" + criteria.getValue().toString().toLowerCase() + "%");
             } else {
                 return builder.equal(path, criteria.getValue());
             }
