@@ -15,6 +15,7 @@ public class JwtService {
     private static final String SECRET_KEY = "9fK2LxQ7!Z#tR4P@H8sYwB3JkE5mC%N&";
 
     private static final long EXPIRATION_MS = 1000 * 60 * 60;
+    //private static final long EXPIRATION_MS = 5000;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
@@ -35,10 +36,12 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token) {
+
         try {
             extractAllClaims(token);
             return true;
         } catch (Exception e) {
+            System.out.println(e.toString());
             throw new NotValidTokenException();
         }
     }

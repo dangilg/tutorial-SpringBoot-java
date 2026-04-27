@@ -58,6 +58,8 @@ public class UserAuthController {
 
         AuthResponseDto response = new AuthResponseDto();
         response.setToken(jwtService.generateToken(user.getUsername()));
+        System.out.println("token");
+        System.out.println(response.getToken());
         return response;
     }
 }

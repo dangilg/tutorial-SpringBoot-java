@@ -66,8 +66,9 @@ public class CategoryController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
     public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.substring(7);
-        this.tokenService.isTokenValid(token);
+       // String token = authorization.substring(7);
+        //this.tokenService.isTokenValid(token);
+        System.out.println("estoy en save category controller");
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
     }
