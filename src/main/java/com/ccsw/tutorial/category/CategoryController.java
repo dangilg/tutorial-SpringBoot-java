@@ -66,9 +66,8 @@ public class CategoryController {
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
     public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-       // String token = authorization.substring(7);
-        //this.tokenService.isTokenValid(token);
-        System.out.println("estoy en save category controller");
+
+       // System.out.println("estoy en save category controller");
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
     }
@@ -84,8 +83,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "cant delete a category in use") })
     public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
 
-        String token = authorization.substring(7);
-        this.tokenService.isTokenValid(token);
+
         if (!isDeleteable(id).isCanDelete()) {
             throw new NotDeleteableException(isDeleteable(id).getReason());
         }
