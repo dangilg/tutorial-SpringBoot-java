@@ -60,4 +60,10 @@ public class GlobalExceptionHandler {
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(), exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(NotValidClientNameException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotValidClientNameException(NotValidClientNameException exception){
+        ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(), exception.getMessage());
+        return  new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 }

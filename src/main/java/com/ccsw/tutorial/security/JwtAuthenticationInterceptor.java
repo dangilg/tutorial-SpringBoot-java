@@ -56,7 +56,7 @@ public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
             return;
         }
 
-        System.out.println("no soy una rut publica");
+        System.out.println("NO soy una ruta publica");
 
         String bearerToken = request.getHeader("Authorization");
 
@@ -64,6 +64,7 @@ public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
             String cleanToken = bearerToken.substring(7);
             if(jwtService.isTokenValid(cleanToken)){
                 System.out.println("tengo un token valido");
+
                 filterChain.doFilter(request,response);
             }
 
