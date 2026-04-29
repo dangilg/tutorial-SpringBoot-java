@@ -49,4 +49,14 @@ public class ClientServiceImpl implements ClientService {
         this.clientRepository.save(client);
         return client;
     }
+
+    @Override
+    public void delete(Long id) throws NoIdFoundException{
+        if (this.getById(id) == null) {
+            throw new NoIdFoundException();
+        }
+
+        this.clientRepository.deleteById(id);
+
+    }
 }

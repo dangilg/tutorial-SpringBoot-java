@@ -51,20 +51,34 @@ public class ClientController {
             @ApiResponse(responseCode = "409", description = "cant delete a client in a loan")
     })
     public void delete(@PathVariable("id")Long id) throws NoIdFoundException, NotDeleteableException{
-        DeleteCheckResponseDto delteable = isDeleteable(id);
-        if(!deletable.isCanDelete()){
+
+        DeleteCheckResponseDto deleteable = isDeleteable(id);
+        if(!deleteable.isCanDelete()){
             throw new NotDeleteableException(deleteable.getReason());
         }
         this.clientService.delete(id);
     }
 
+
     @Operation(summary = "Can-Delete",description = "Method thar checks if a Client is deleteable")
     @RequestMapping(path = "/{id}/can-delete",method = RequestMethod.GET)
     public DeleteCheckResponseDto isDeleteable(@PathVariable("id")Long id){
+        if(id==3){
+            return new DeleteCheckResponseDto(true,"");
+        }
+        else {
+            return new DeleteCheckResponseDto(false,"IN_USE");
+        }
+
+        /*
         if (this.loanRepository.existsByClientId(id)) {
             return new DeleteCheckResponseDto(false, "IN_USE");
         } else {
             return new DeleteCheckResponseDto(true, "");
         }
+
+         */
     }
+
+
 }

@@ -60,7 +60,9 @@ public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
 
         String bearerToken = request.getHeader("Authorization");
 
-
+        if(bearerToken==null){
+            throw new NotValidTokenException();
+        }
             String cleanToken = bearerToken.substring(7);
             if(jwtService.isTokenValid(cleanToken)){
                 System.out.println("tengo un token valido");

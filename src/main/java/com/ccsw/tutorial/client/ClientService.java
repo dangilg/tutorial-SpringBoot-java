@@ -14,4 +14,6 @@ public interface ClientService {
     List<Client> findAll();
 
     Client save(Long id, ClientDto dto) throws NoIdFoundException;
+
+    void delete(Long id)throws NoIdFoundException;
 }
