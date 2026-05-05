@@ -43,7 +43,10 @@ PathPatternParser patternParser;
             ,
             //Client
             new PublicRoute(GET,"/client"),
-            new PublicRoute(GET,"/client/can-delete")
+            new PublicRoute(GET,"/client/can-delete"),
+
+            //Loan
+            new PublicRoute(POST, "/loan")
 
     );
 
