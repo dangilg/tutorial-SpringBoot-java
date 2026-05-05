@@ -23,3 +23,13 @@ INSERT INTO game(title, age, category_id, author_id) VALUES ('Azul', '8', 3, 5);
 INSERT INTO client(name) VALUES ('Daniel');
 INSERT INTO client(name) VALUES ('Marcos');
 INSERT INTO client(name) VALUES ('Miguel');
+
+INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
+1,1,'2026-05-04','2026-05-10'
+);
+INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
+2,2,'2026-05-03','2026-05-13'
+);
+INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
+3,3,'2026-04-03','2026-04-13'
+);
