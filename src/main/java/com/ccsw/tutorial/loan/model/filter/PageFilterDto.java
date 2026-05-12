@@ -1,4 +1,4 @@
-package com.ccsw.tutorial.loan.model;
+package com.ccsw.tutorial.loan.model.filter;
 
 import com.ccsw.tutorial.common.pagination.PageableRequest;
 

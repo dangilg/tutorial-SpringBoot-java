@@ -1,6 +1,4 @@
-package com.ccsw.tutorial.loan.model;
-
-import java.time.LocalDate;
+package com.ccsw.tutorial.loan.model.filter;
 
 public class FilterDataModel {
     private Long clientId;

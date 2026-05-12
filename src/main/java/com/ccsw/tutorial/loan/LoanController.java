@@ -1,10 +1,10 @@
 package com.ccsw.tutorial.loan;
 
-import com.ccsw.tutorial.common.pagination.PageableRequest;
-import com.ccsw.tutorial.loan.model.FilterDataModel;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
-import com.ccsw.tutorial.loan.model.PageFilterDto;
+import com.ccsw.tutorial.loan.model.available.AvailableRequestDto;
+import com.ccsw.tutorial.loan.model.available.AvailableResponseDto;
+import com.ccsw.tutorial.loan.model.filter.PageFilterDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
@@ -34,9 +34,23 @@ public class LoanController {
 
         Page<Loan> page = loanService.findPageFiltered(dto);
 
-
-
-        return  new PageImpl<>(page.getContent().stream().map(e->mapper.map(e,LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
+        System.out.println(page.getContent());
+        Page<LoanDto> ret =new PageImpl<>(page.getContent().stream().map(e->mapper.map(e,LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
+        return  ret;
     }
 
+    @Operation(summary = "Available",description = "Method that returns the availables clients, games and dates due to the data in the dto")
+    @RequestMapping(path = "/available",method = RequestMethod.POST)
+    public AvailableResponseDto available(@RequestBody AvailableRequestDto dto){
+        System.out.println("available");
+        return  loanService.calculateAvailability(dto);
+    }
+
+
+    @Operation(summary = "save", description = "Mathod that save or updates a loan")
+    @RequestMapping(path = {"/save","/save/{id}"},method = RequestMethod.PUT)
+    public void save(@PathVariable (name="id", required = false) Long id, @RequestBody AvailableRequestDto dto){
+        System.err.println("estoy en save");
+        loanService.save(id,dto);
+    }
 }

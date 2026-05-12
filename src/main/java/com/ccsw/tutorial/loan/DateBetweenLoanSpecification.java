@@ -15,9 +15,9 @@ public class DateBetweenLoanSpecification {
             }
 
             Predicate startBeforeOrEqual =
-                    cb.lessThanOrEqualTo(root.get("start_date"),referenceDate);
+                    cb.lessThanOrEqualTo(root.get("startDate"),referenceDate);
             Predicate endAfterOrEqual =
-                    cb.greaterThanOrEqualTo(root.get("end_date"),referenceDate);
+                    cb.greaterThanOrEqualTo(root.get("endDate"),referenceDate);
 
             return cb.and(startBeforeOrEqual,endAfterOrEqual);
         };

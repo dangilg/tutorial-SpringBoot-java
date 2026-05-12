@@ -4,7 +4,6 @@ import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.game.model.Game;
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +13,7 @@ public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id",nullable = false)
-    private long id;
+    private Long id;
 
     public long getId() {
         return id;
@@ -40,20 +39,20 @@ public class Loan {
         this.client = client;
     }
 
-    public LocalDate getStart_date() {
-        return start_date;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setStart_date(LocalDate start_date) {
-        this.start_date = start_date;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public LocalDate getEnd_date() {
-        return end_date;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setEnd_date(LocalDate end_date) {
-        this.end_date = end_date;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     @ManyToOne
@@ -65,9 +64,9 @@ public class Loan {
     private Client client;
 
     @Column(name="start_date",nullable = false)
-    private LocalDate start_date;
+    private LocalDate startDate;
 
     @Column(name="end_date",nullable = false)
-    private LocalDate end_date;
+    private LocalDate endDate;
 
 }

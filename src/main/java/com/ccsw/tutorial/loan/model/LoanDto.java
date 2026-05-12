@@ -11,8 +11,8 @@ public class LoanDto {
     private Long id;
     private GameDto game;
     private ClientDto client;
-    private LocalDate start_date;
-    private LocalDate end_date;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public Long getId() {
         return id;
@@ -38,19 +38,19 @@ public class LoanDto {
         this.client = client;
     }
 
-    public LocalDate getStart_date() {
-        return start_date;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setStart_date(LocalDate start_date) {
-        this.start_date = start_date;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public LocalDate getEnd_date() {
-        return end_date;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setEnd_date(LocalDate end_date) {
-        this.end_date = end_date;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

@@ -46,7 +46,7 @@ public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
         System.out.println(uri);
         String method = request.getMethod();
 
-        System.out.println("estoy en Inerceptor");
+        System.out.println("estoy en Interceptor");
 
 
 

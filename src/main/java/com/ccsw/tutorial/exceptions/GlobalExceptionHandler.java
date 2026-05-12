@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception exception) {
-        System.out.println("GlobalExceptionHandler -> Exception.class \n"+exception.toString());
+        //System.out.println("GlobalExceptionHandler -> Exception.class \n"+exception.toString());
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotValidTokenException.class)
     public ResponseEntity<ErrorResponseDto> handleNotValidTokenException(NotValidTokenException exception) {
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
-        System.out.println("globalHandlerException -> NotValidToken");
+        //System.out.println("globalHandlerException -> NotValidToken");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
@@ -65,5 +65,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleNotValidClientNameException(NotValidClientNameException exception){
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(), exception.getMessage());
         return  new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(NotValidLoanException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotValidLoanException(NotValidLoanException exception){
+        ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(),exception.getMessage());
+        return  new ResponseEntity<>(response,HttpStatus.CONFLICT);
     }
 }
