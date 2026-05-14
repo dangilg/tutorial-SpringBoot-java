@@ -34,7 +34,7 @@ INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
 );
 
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-1,3,'2026-05-14','2026-05-18'
+1,3,'2026-05-15','2026-05-18'
 );
 
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (

@@ -30,11 +30,11 @@ public class LoanController {
     @Operation(summary = "Find", description = "Method that returns a page of filtered Loans")
     @RequestMapping(path="", method = RequestMethod.POST)
     public Page<LoanDto> find(@RequestBody PageFilterDto dto){
-        System.out.println("estoy en find");
+
 
         Page<Loan> page = loanService.findPageFiltered(dto);
 
-        System.out.println(page.getContent());
+
         Page<LoanDto> ret =new PageImpl<>(page.getContent().stream().map(e->mapper.map(e,LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
         return  ret;
     }
@@ -52,5 +52,11 @@ public class LoanController {
     public void save(@PathVariable (name="id", required = false) Long id, @RequestBody AvailableRequestDto dto){
         System.err.println("estoy en save");
         loanService.save(id,dto);
+    }
+
+    @Operation(summary = "count", description = "Method that returns the number of loans")
+    @RequestMapping(path = "/count",method = RequestMethod.GET)
+    public long count(){
+        return loanService.getCount();
     }
 }

@@ -13,4 +13,6 @@ public interface LoanService {
     AvailableResponseDto calculateAvailability(AvailableRequestDto dto);
 
     void save(Long id, AvailableRequestDto dto);
+
+    long getCount();
 }

@@ -40,6 +40,11 @@ public class LoanServiceImp implements LoanService{
     @Autowired
     ClientRepository clientRepository;
 
+
+    @Override
+    public long getCount(){
+        return this.loanRepository.count();
+    }
     @Override
     public Page<Loan> findPageFiltered(PageFilterDto dto) {
         FilterDataModel filters = dto.getFilters();
@@ -48,8 +53,12 @@ public class LoanServiceImp implements LoanService{
         GenericSpecification<Loan> clientSpec = new GenericSpecification<Loan>(new SearchCriteria("client.id",":",filters.getClientId()));
         GenericSpecification<Loan> gameSpec = new GenericSpecification<Loan>(new SearchCriteria("game.id",":",filters.getGameId()));
 
+        Date referenceDate = null;
         //todo -> revisar excepciones posibles en un TryCatch
-        Date referenceDate = Date.valueOf(filters.getDate());
+        if(filters.getDate()!=null){
+             referenceDate= Date.valueOf(filters.getDate());
+        }
+
 
         Specification<Loan> spec = clientSpec.and(gameSpec).and(
                 DateBetweenLoanSpecification.dateBetween(referenceDate)

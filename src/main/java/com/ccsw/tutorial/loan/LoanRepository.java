@@ -64,4 +64,6 @@ public interface LoanRepository extends CrudRepository<Loan, Long>, JpaSpecifica
     List<Loan> findLoansByGameOrdered(
             @Param("gameId") long gameId
     );
+
+
 }
