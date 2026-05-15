@@ -66,4 +66,8 @@ public interface LoanRepository extends CrudRepository<Loan, Long>, JpaSpecifica
     );
 
 
+    @Query("""
+            SELECT MAX(l.id) FROM Loan l
+            """)
+    Long getLastId();
 }

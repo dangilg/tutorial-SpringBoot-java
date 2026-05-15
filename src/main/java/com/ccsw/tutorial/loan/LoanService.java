@@ -14,5 +14,7 @@ public interface LoanService {
 
     void save(Long id, AvailableRequestDto dto);
 
-    long getCount();
+    long getLastId();
+
+    void delete(Long id);
 }

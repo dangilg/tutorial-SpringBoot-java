@@ -30,6 +30,7 @@ import java.util.List;
 public class LoanServiceImp implements LoanService{
     //cantidad máxima de dias seleccionables desde hoy
     private final int MAX_LIMIT_DATES_SELECTED = 60;
+    private long lastId = -1;
 
     @Autowired
     LoanRepository loanRepository;
@@ -42,9 +43,19 @@ public class LoanServiceImp implements LoanService{
 
 
     @Override
-    public long getCount(){
-        return this.loanRepository.count();
+    public long getLastId(){
+        long lastDbId = loanRepository.getLastId();
+        if(lastDbId>lastId){
+            lastId = lastDbId;
+        }
+        return lastId;
     }
+
+    @Override
+    public void delete(Long id){
+        loanRepository.deleteById(id);
+    }
+
     @Override
     public Page<Loan> findPageFiltered(PageFilterDto dto) {
         FilterDataModel filters = dto.getFilters();

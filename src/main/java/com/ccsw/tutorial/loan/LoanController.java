@@ -54,9 +54,15 @@ public class LoanController {
         loanService.save(id,dto);
     }
 
-    @Operation(summary = "count", description = "Method that returns the number of loans")
-    @RequestMapping(path = "/count",method = RequestMethod.GET)
+    @Operation(summary = "lastId", description = "Method that returns the lastId in the system")
+    @RequestMapping(path = "/lastId",method = RequestMethod.GET)
     public long count(){
-        return loanService.getCount();
+        return loanService.getLastId();
+    }
+
+    @Operation(summary = "delete", description = "Method that deletes a Loan")
+    @RequestMapping(path = "/{id}",method = RequestMethod.DELETE)
+    public void delete(@PathVariable (name="id",required = true)Long id){
+        loanService.delete(id);
     }
 }
