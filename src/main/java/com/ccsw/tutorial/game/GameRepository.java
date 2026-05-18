@@ -51,4 +51,9 @@ public interface GameRepository extends CrudRepository<Game, Long>, JpaSpecifica
             @Param("startDate")LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+
+    List<Game> findByCategoryId(Long categoryId);
+
+    List<Game> findByAuthorId(Long authorId);
 }
