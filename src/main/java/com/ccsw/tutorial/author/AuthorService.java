@@ -3,6 +3,7 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
 import org.springframework.data.domain.Page;
 
@@ -54,4 +55,5 @@ public interface AuthorService {
      */
     List<Author> findAll();
 
+    DeleteCheckResponseDto isDeleteable(Long id);
 }

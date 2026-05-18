@@ -3,7 +3,11 @@ package com.ccsw.tutorial.author;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckObject;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.game.GameRepository;
+import com.ccsw.tutorial.game.model.Game;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Autowired
     AuthorRepository authorRepository;
 
+    @Autowired
+    GameRepository gameRepository;
     /**
      * {@inheritDoc}
      */
@@ -85,4 +91,16 @@ public class AuthorServiceImpl implements AuthorService {
         return (List<Author>) this.authorRepository.findAll();
     }
 
+    @Override
+    public DeleteCheckResponseDto isDeleteable(Long id){
+
+        List<Game> gamesInConflict = gameRepository.findByAuthorId(id);
+        if(!gamesInConflict.isEmpty()){
+            List<DeleteCheckObject> list = gamesInConflict.stream().map(g->new DeleteCheckObject(g.getId(),g.getTitle())).toList();
+            return new DeleteCheckResponseDto(false,"EN USO", list);
+        }
+        else{
+            return new DeleteCheckResponseDto(true, "",List.of());
+        }
+    }
 }
