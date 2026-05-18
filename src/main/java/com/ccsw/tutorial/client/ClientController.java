@@ -63,21 +63,7 @@ public class ClientController {
     @Operation(summary = "Can-Delete",description = "Method thar checks if a Client is deleteable")
     @RequestMapping(path = "/{id}/can-delete",method = RequestMethod.GET)
     public DeleteCheckResponseDto isDeleteable(@PathVariable("id")Long id){
-        if(id==3){
-            return new DeleteCheckResponseDto(true,"");
-        }
-        else {
-            return new DeleteCheckResponseDto(false,"IN_USE");
-        }
-
-        /*
-        if (this.loanRepository.existsByClientId(id)) {
-            return new DeleteCheckResponseDto(false, "IN_USE");
-        } else {
-            return new DeleteCheckResponseDto(true, "");
-        }
-
-         */
+        return clientService.isDeleteable(id);
     }
 
 
