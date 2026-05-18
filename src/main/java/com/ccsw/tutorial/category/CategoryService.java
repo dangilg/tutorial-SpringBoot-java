@@ -2,6 +2,7 @@ package com.ccsw.tutorial.category;
 
 import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
 
 import java.util.List;
@@ -42,4 +43,5 @@ public interface CategoryService {
      */
     void delete(Long id) throws NoIdFoundException;
 
+    DeleteCheckResponseDto isDeleteable(Long id);
 }

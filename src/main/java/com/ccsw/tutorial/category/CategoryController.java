@@ -93,10 +93,7 @@ public class CategoryController {
     @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
     @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
     public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) {
-        if (this.gameRepository.existsByCategoryId(id)) {
-            return new DeleteCheckResponseDto(false, "IN_USE");
-        } else {
-            return new DeleteCheckResponseDto(true, "");
-        }
+
+        return categoryService.isDeleteable(id);
     }
 }
