@@ -14,8 +14,8 @@ import java.util.Date;
 public class JwtService {
     private static final String SECRET_KEY = "9fK2LxQ7!Z#tR4P@H8sYwB3JkE5mC%N&";
 
-    private static final long EXPIRATION_MS = 1000 * 60 * 60;
-    //private static final long EXPIRATION_MS = 5000;
+    //private static final long EXPIRATION_MS = 1000 * 60 * 60;
+    private static final long EXPIRATION_MS = 5000;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

@@ -47,7 +47,8 @@ PathPatternParser patternParser;
 
             //Loan
             new PublicRoute(POST, "/loan"),
-            new PublicRoute(GET,"/loan/count")
+            new PublicRoute(GET,"/loan/count"),
+            new PublicRoute(GET,"/loan/lastId")
 
 
     );
