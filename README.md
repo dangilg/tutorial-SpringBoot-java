@@ -24,3 +24,18 @@ While most of the inheritance is fine, it also inherits unwanted elements like `
 To prevent this, the project POM contains empty overrides for these elements.
 If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
 
+---
+./src/main/java/com/ccsw/tutorial/
+
+
+## Modificaciones respecto al tutorial
+
+### General
+- Manejo de *isDeleteable* mediante su propio DTO. <br> [DeleteCheckResponseDto](./src/main/java/com/ccsw/tutorial/common/deleteCheck/DeleteCheckResponseDto.java)
+
+### Autor
+- Ninguna modificación.
+
+### Otros
+- Implementación de un **Interceptor** y su consecuente *SecurityConfig* para revisar el token válido en las peticiones entrantres. [Interceptor](./src/main/java/com/ccsw/tutorial/security/)
+- Añadidas las **Rutas Públicas** (rutas que no necesitan token) y una clase suya propia.
