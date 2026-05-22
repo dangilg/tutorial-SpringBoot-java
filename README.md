@@ -31,11 +31,32 @@ If you manually switch to a different parent and actually want the inheritance, 
 ## Modificaciones respecto al tutorial
 
 ### General
-- Manejo de *isDeleteable* mediante su propio DTO. <br> [DeleteCheckResponseDto](./src/main/java/com/ccsw/tutorial/common/deleteCheck/DeleteCheckResponseDto.java)
-
+- Manejo de *isDeleteable* mediante su propio DTO. [DeleteCheck](./src/main/java/com/ccsw/tutorial/common/deleteCheck/)
+- Manejo de errores mediante un **GlobalExceptionHandler** y *Excepciones propias* para los distintos errores según las Reglas de Negocio. [ExceptionHandler](./src/main/java/com/ccsw/tutorial/exceptions/) 
+- Para los filtros, se genereliza el *GameSpecification* a un *GenericSpecification*. [Criteria](./src/main/java/com/ccsw/tutorial/common/criteria/).
+- 
 ### Autor
 - Ninguna modificación.
+
+### Categoría
+- Ninguna modificación.
+
+### Cliente
+- Se implementan funciones en su *Repository* para los filtr os de **Préstamo**. [ClientRepository](./src/main/java/com/ccsw/tutorial/client/ClientRepository.java)
+
+### Juego
+- Se aplican un cambio de *Case* para hacer más preciso el filtro.
+- Se implementan funciones en su *Repository* para los filtros de **Préstamo**. [GameRepository](./src/main/java/com/ccsw/tutorial/game/GameRepository.java)
+
+### Préstamo
+- **DTO's específicos** para transmitir la información necesaria a la hora de ver si un *Préstamo* es válido. [Avaliability](./src/main/java/com/ccsw/tutorial/loan/model/available/)
+- **DTO's específicos** para transmitir la información necesaria a la hora de encontrar una **lista paginada** de *Préstamos* dados los *filtros* y la *paginación*. [PageFiltered](./src/main/java/com/ccsw/tutorial/loan/model/filter/)
+- **Specifiaction** para los intervalos de Fechas.
+- Endpoint para revisar si, dados los filtros, el *Préstamo* es válido.
+- Endpoint específico para obtener el último *id* de cara al *UX*.
 
 ### Otros
 - Implementación de un **Interceptor** y su consecuente *SecurityConfig* para revisar el token válido en las peticiones entrantres. [Interceptor](./src/main/java/com/ccsw/tutorial/security/)
 - Añadidas las **Rutas Públicas** (rutas que no necesitan token) y una clase suya propia.
+- Implementación de la seguridad con token JWT. [Token](./src/main/java/com/ccsw/tutorial/tokenAuth/tokenAuthController.java)
+- Implementación de la lógica de **Inicio de Sesión** y **Registro** de usuarios, con *Contraeñas Hasheadas*. [UserAuthentication](./src/main/java/com/ccsw/tutorial/userAuth/)
