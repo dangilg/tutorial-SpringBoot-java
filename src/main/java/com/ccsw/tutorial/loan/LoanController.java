@@ -31,7 +31,7 @@ public class LoanController {
     @RequestMapping(path="", method = RequestMethod.POST)
     public Page<LoanDto> find(@RequestBody PageFilterDto dto){
 
-        System.out.println("Loan/Find \n" + dto.getPageable().getPageNumber());
+
         Page<Loan> page = loanService.findPageFiltered(dto);
 
 
@@ -42,7 +42,7 @@ public class LoanController {
     @Operation(summary = "Available",description = "Method that returns the availables clients, games and dates due to the data in the dto")
     @RequestMapping(path = "/available",method = RequestMethod.POST)
     public AvailableResponseDto available(@RequestBody AvailableRequestDto dto){
-        System.out.println("available");
+
         return  loanService.calculateAvailability(dto);
     }
 
@@ -50,7 +50,7 @@ public class LoanController {
     @Operation(summary = "save", description = "Mathod that save or updates a loan")
     @RequestMapping(path = {"/save","/save/{id}"},method = RequestMethod.PUT)
     public void save(@PathVariable (name="id", required = false) Long id, @RequestBody AvailableRequestDto dto){
-        System.err.println("estoy en save");
+
         loanService.save(id,dto);
     }
 

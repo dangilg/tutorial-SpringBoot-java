@@ -36,11 +36,7 @@ public class CategoryController {
     @Autowired
     ModelMapper mapper;
 
-    @Autowired
-    GameRepository gameRepository;
 
-    @Autowired
-    JwtService tokenService;
 
     /**
      * Método para recuperar todas las {@link Category}
@@ -65,9 +61,8 @@ public class CategoryController {
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Category")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
+    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) throws NoIdFoundException, NotValidTokenException {
 
-       // System.out.println("estoy en save category controller");
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
     }
@@ -81,7 +76,7 @@ public class CategoryController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
             @ApiResponse(responseCode = "409", description = "cant delete a category in use") })
-    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
+    public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
 
 
         if (!isDeleteable(id).isCanDelete()) {

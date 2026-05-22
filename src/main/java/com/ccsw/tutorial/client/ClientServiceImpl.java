@@ -25,6 +25,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     LoanRepository loanRepository;
+
     @Override
     public Client getById(Long id){
         return this.clientRepository.findById(id).orElse(null);

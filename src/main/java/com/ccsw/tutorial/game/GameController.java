@@ -31,9 +31,6 @@ public class GameController {
     @Autowired
     ModelMapper mapper;
 
-    @Autowired
-    JwtService tokenService;
-
     /**
      * Método para recuperar una lista de {@link Game}
      *
@@ -62,9 +59,8 @@ public class GameController {
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Game")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.substring(7);
-        tokenService.isTokenValid(token);
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody GameDto dto) throws NoIdFoundException, NotValidTokenException {
+
         gameService.save(id, dto);
     }
 

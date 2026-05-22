@@ -39,9 +39,6 @@ public class AuthorController {
     ModelMapper mapper;
 
     @Autowired
-    GameRepository gameRepository;
-
-    @Autowired
     JwtService tokenService;
 
     /**
@@ -83,9 +80,7 @@ public class AuthorController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
             @ApiResponse(responseCode = "409", description = "cant delete an Author in use") })
-    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
-        String token = authorization.substring(7);
-        this.tokenService.isTokenValid(token);
+    public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
         if (!isDeleteable(id).isCanDelete()) {
             throw new NotDeleteableException(isDeleteable(id).getReason());
         }

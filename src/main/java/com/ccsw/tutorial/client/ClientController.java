@@ -39,7 +39,7 @@ public class ClientController {
     })
 
     public ClientDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody ClientDto dto) throws NoIdFoundException {
-        //System.out.println("controllerClientSave");
+
         Client client = this.clientService.save(id, dto);
         return mapper.map(client, ClientDto.class);
     }
