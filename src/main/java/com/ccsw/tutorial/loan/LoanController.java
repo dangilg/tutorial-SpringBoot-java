@@ -31,7 +31,7 @@ public class LoanController {
     @RequestMapping(path="", method = RequestMethod.POST)
     public Page<LoanDto> find(@RequestBody PageFilterDto dto){
 
-
+        System.out.println("Loan/Find \n" + dto.getPageable().getPageNumber());
         Page<Loan> page = loanService.findPageFiltered(dto);
 
 
