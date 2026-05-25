@@ -24,19 +24,22 @@ INSERT INTO client(name) VALUES ('Daniel');
 INSERT INTO client(name) VALUES ('Marcos');
 INSERT INTO client(name) VALUES ('Miguel');
 
-
+-- 1 cliente 2 juegos
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-1,1,'2026-05-12','2026-05-14'
+1,1,'2026-05-20','2026-05-30'
 );
 
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-1,2,'2026-05-20','2026-05-23'
+2,1,'2026-05-25','2026-05-28'
 );
 
+-- futuro
+INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
+1,2,'2026-05-31','2026-06-02'
+);
+
+-- pasado
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
 1,3,'2026-05-15','2026-05-18'
 );
 
-INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-2,1,'2026-05-12','2026-05-21'
-);
