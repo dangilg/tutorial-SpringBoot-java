@@ -75,8 +75,13 @@ public class ClientServiceImpl implements ClientService {
         List<Loan> conflictLoans = loanRepository.findByClientId(id)
                 .stream()
                 .filter(loan->
-                        !today.isBefore(loan.getStartDate()) &&
-                        !today.isAfter(loan.getEndDate())
+                        (
+                                !today.isBefore(loan.getStartDate())
+                                &&
+                                !today.isAfter(loan.getEndDate())
+                        )
+                        ||
+                        loan.getStartDate().isAfter(today)
                 )
                 .toList();
         if(!conflictLoans.isEmpty()){
