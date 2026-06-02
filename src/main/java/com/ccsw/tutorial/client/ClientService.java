@@ -4,6 +4,8 @@ import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
+import com.ccsw.tutorial.exceptions.NotValidClientNameException;
 import com.ccsw.tutorial.loan.model.Loan;
 
 import java.util.List;
@@ -30,21 +32,24 @@ public interface ClientService {
      * @param dto {@link ClientDto} nuevos datos del cliente
      * @return {@link Client} con los nuevos datos
      * @throws NoIdFoundException si al modificar, el {@link Client} no existe en la BD
+     * @throws NotValidClientNameException si el nombre del {@link Client} ya existe en la BD
      */
-    Client save(Long id, ClientDto dto) throws NoIdFoundException;
+    Client save(Long id, ClientDto dto) throws NoIdFoundException, NotValidClientNameException;
 
     /**
      * Borra un {@link Client} de la BD
      * @param id PK de la entidad
      * @throws NoIdFoundException si el {@link Client} a borrar no existe en la BD
+     * @throws NotDeleteableException si el {@link Client} está en una {@link Loan} activa
      */
-    void delete(Long id)throws NoIdFoundException;
+    void delete(Long id)throws NoIdFoundException, NotDeleteableException;
 
     /**
      * Comprueba si un {@link Client} se puede borrar o no
      * @param id PK de la entidad
      * @return {@link DeleteCheckResponseDto} verdadera si se puede borrar.
      * {@link DeleteCheckResponseDto} falsa y lista de {@link Loan} activos en los que está
+     * @throws NoIdFoundException si no existe el {@link Client}
      */
-    DeleteCheckResponseDto isDeleteable(Long id);
+    DeleteCheckResponseDto isDeleteable(Long id) throws NoIdFoundException;
 }

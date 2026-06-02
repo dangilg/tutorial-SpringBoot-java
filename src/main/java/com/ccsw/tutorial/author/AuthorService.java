@@ -5,6 +5,7 @@ import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.model.Game;
 import org.springframework.data.domain.Page;
 
@@ -46,8 +47,9 @@ public interface AuthorService {
      *
      * @param id PK de la entidad
      * @throws NoIdFoundException si el Id no está en la BD
+     * @throws NotDeleteableException si el {@link Author} está en uso en algún {@link Game}
      */
-    void delete(Long id) throws NoIdFoundException;
+    void delete(Long id) throws NoIdFoundException, NotDeleteableException;
 
     /**
      * Recupera un listado de autores {@link Author}
@@ -61,6 +63,7 @@ public interface AuthorService {
      * @param id PK de la entidad
      * @return {@link DeleteCheckResponseDto} verdadera si se puede borrar.
      * {@link DeleteCheckResponseDto} falsa y la lista de {@link Game} en los que está si no se puede borrar
+     * @throws NoIdFoundException si el {@link Author} no existe en la BD
      */
-    DeleteCheckResponseDto isDeleteable(Long id);
+    DeleteCheckResponseDto isDeleteable(Long id) throws NoIdFoundException;
 }

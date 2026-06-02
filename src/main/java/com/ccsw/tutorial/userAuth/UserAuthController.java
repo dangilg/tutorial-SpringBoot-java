@@ -49,7 +49,7 @@ public class UserAuthController {
 
     @Operation(summary = "iniciar sesion", description = "Method que inicia sesión de un user")
     @RequestMapping(path = "/logIn", method = RequestMethod.POST)
-    @ApiResponses({ @ApiResponse(responseCode = "401", description = "Wrong User or Password") })
+    @ApiResponses({ @ApiResponse(responseCode = "401", description = "Wrong User or Password")})
     public AuthResponseDto logIn(@RequestBody UserDto dto) throws NotFoundUserException, WrongPasswordException {
 
         User user = userAuthService.getUser(dto.getUsername());

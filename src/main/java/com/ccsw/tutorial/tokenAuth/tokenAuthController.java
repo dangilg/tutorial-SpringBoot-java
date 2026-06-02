@@ -2,6 +2,7 @@ package com.ccsw.tutorial.tokenAuth;
 
 import com.ccsw.tutorial.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class tokenAuthController {
      */
     @Operation(summary = "check if a token is valid", description = "method that check if a token gived in params is valid")
     @RequestMapping(path = "/validateToken", method = RequestMethod.GET)
+    @ApiResponse(responseCode = "401",description = "the token is not valid")
     public ResponseEntity<Void> validateToken(@RequestHeader("Authorization") String token) {
         token = token.substring(7);
         if (tokenService.isTokenValid(token)) {

@@ -8,6 +8,8 @@ import com.ccsw.tutorial.loan.model.available.AvailableRequestDto;
 import com.ccsw.tutorial.loan.model.available.AvailableResponseDto;
 import com.ccsw.tutorial.loan.model.filter.PageFilterDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,9 @@ public class LoanController {
      */
     @Operation(summary = "save", description = "Mathod that save or updates a loan")
     @RequestMapping(path = {"/save","/save/{id}"},method = RequestMethod.PUT)
+    @ApiResponses({
+            @ApiResponse(responseCode = "409",description = "Loan has a value not Allowed")
+    })
     public void save(@PathVariable (name="id", required = false) Long id, @RequestBody AvailableRequestDto dto){
 
         loanService.save(id,dto);

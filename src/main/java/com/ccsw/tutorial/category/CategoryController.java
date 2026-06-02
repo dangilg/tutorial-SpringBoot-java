@@ -62,8 +62,8 @@ public class CategoryController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Category")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto) throws NoIdFoundException{
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
+    public CategoryDto save(@PathVariable(name = "id", required = false) Long id, @RequestBody CategoryDto dto){
 
         Category category = this.categoryService.save(id, dto);
         return mapper.map(category, CategoryDto.class);
@@ -76,14 +76,10 @@ public class CategoryController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Category")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"),
             @ApiResponse(responseCode = "409", description = "cant delete a category in use") })
-    public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
+    public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotDeleteableException {
 
-
-        if (!isDeleteable(id).isCanDelete()) {
-            throw new NotDeleteableException(isDeleteable(id).getReason());
-        }
         this.categoryService.delete(id);
     }
 

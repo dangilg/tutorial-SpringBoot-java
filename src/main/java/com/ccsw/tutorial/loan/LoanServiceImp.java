@@ -196,7 +196,7 @@ public class LoanServiceImp implements LoanService{
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, AvailableRequestDto dto){
+    public void save(Long id, AvailableRequestDto dto) throws NotValidLoanException{
         if(dto==null){
             throw new NotValidDtoException();
         }

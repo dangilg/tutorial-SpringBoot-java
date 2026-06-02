@@ -65,8 +65,8 @@ public class AuthorController {
      */
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws NoIdFoundException, NotValidTokenException {
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists") })
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto)  {
 
         this.authorService.save(id, dto);
     }
@@ -78,13 +78,9 @@ public class AuthorController {
      */
     @Operation(summary = "Delete", description = "Method that deletes a Author")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
+    @ApiResponses({ @ApiResponse(responseCode = "404", description = "author doesn't exists"),
             @ApiResponse(responseCode = "409", description = "cant delete an Author in use") })
     public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotDeleteableException {
-        if (!isDeleteable(id).isCanDelete()) {
-            throw new NotDeleteableException(isDeleteable(id).getReason());
-        }
-
         this.authorService.delete(id);
     }
 
@@ -111,6 +107,7 @@ public class AuthorController {
      */
     @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
     @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
+    @ApiResponse(responseCode = "404",description = "Author doesn't exists")
     public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) throws NoIdFoundException {
 
         return authorService.isDeleteable(id);

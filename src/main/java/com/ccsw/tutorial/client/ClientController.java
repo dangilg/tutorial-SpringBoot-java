@@ -49,7 +49,6 @@ public class ClientController {
     @RequestMapping(path = {"", "/{id}"}, method = RequestMethod.PUT)
     @ApiResponses({
             @ApiResponse(responseCode = "404", description = "client doesn't exists"),
-            @ApiResponse(responseCode = "401", description = "invalid token"),
             @ApiResponse(responseCode = "409", description = "Client name Already exists")
     })
 
@@ -70,11 +69,6 @@ public class ClientController {
             @ApiResponse(responseCode = "409", description = "cant delete a client in a loan")
     })
     public void delete(@PathVariable("id")Long id){
-
-        DeleteCheckResponseDto deleteable = isDeleteable(id);
-        if(!deleteable.isCanDelete()){
-            throw new NotDeleteableException(deleteable.getReason());
-        }
         this.clientService.delete(id);
     }
 

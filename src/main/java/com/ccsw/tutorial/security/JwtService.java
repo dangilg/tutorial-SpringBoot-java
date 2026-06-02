@@ -60,8 +60,9 @@ public class JwtService {
      * Verifica si el token es válido o ha expirado o ha sido modificado
      * @param token Token JWT
      * @return True si es válido, False si no
+     * @throws NotValidTokenException si el token no es válido
      */
-    public boolean isTokenValid(String token) {
+    public boolean isTokenValid(String token) throws NotValidTokenException {
 
         try {
             extractAllClaims(token);

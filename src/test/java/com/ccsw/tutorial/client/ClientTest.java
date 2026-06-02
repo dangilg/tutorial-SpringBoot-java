@@ -4,6 +4,7 @@ import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.exceptions.NotValidClientNameException;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.loan.LoanRepository;
@@ -132,6 +133,34 @@ public class ClientTest {
         verify(clientRepository, never()).deleteById(any());
     }
 
+    @Test
+    public void deleteANonDeleteableClientShouldThrowException(){
+        Client client = new Client();
+        client.setId(EXISTS_CLIENT_ID);
+
+        Loan loan = new Loan();
+        loan.setId(1L);
+        loan.setStartDate(LocalDate.now().minusDays(1));
+        loan.setEndDate(LocalDate.now().plusDays(1));
+
+        Game game = new Game();
+        game.setTitle("Juego Test");
+        loan.setGame(game);
+
+        when(clientRepository.findById(EXISTS_CLIENT_ID))
+                .thenReturn(Optional.of(client));
+
+        when(loanRepository.findByClientId(EXISTS_CLIENT_ID))
+                .thenReturn(List.of(loan));
+
+        assertThrows(NotDeleteableException.class,()->{
+            clientService.delete(EXISTS_CLIENT_ID);
+        });
+
+        verify(clientRepository,times(2)).findById(EXISTS_CLIENT_ID);
+        verify(loanRepository).findByClientId(EXISTS_CLIENT_ID);
+
+    }
     @Test
     public void getByIdWithExistingIdShouldReturnClient() {
 

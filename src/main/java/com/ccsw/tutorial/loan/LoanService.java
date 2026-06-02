@@ -1,6 +1,8 @@
 package com.ccsw.tutorial.loan;
 
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
+import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotValidLoanException;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.available.AvailableRequestDto;
 import com.ccsw.tutorial.loan.model.available.AvailableResponseDto;
@@ -32,8 +34,14 @@ public interface LoanService {
      * - Una {@link Loan} puede durar 14 días como máximo.
      * @param id PK de la entidad
      * @param dto {@link AvailableRequestDto} datos de la {@link Loan}
+     * @throws NotValidLoanException si no existe la {@link Loan}
+     * @throws NotValidLoanException si el dto es null
+     * @throws NotValidLoanException si alguno de los valores del dto es null
+     * @throws NotValidLoanException si el {@link com.ccsw.tutorial.client.model.Client} o el {@link com.ccsw.tutorial.game.model.Game} dados en el dto no existen en la BD
+     * @throws NotValidLoanException si la fecha de fin es anterior a la de inicio, o si es mayor de 14 días desde la de inicio
+     * @throws NotValidLoanException si las fechas no son válidas para el {@link com.ccsw.tutorial.client.model.Client} o para el {@link com.ccsw.tutorial.game.model.Game} dados
      */
-    void save(Long id, AvailableRequestDto dto);
+    void save(Long id, AvailableRequestDto dto) throws NotValidLoanException;
 
     /**
      * Metodo que obtiene le id el último elemento de la tabla de {@link Loan}

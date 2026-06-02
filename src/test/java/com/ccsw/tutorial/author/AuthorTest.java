@@ -6,6 +6,7 @@ import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.common.pagination.PageableRequest;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.model.Game;
 import org.junit.jupiter.api.Test;
@@ -147,6 +148,27 @@ public class AuthorTest {
         verify(authorRepository, never()).deleteById(any());
     }
 
+    @Test
+    public void deleteANonDeleteableAuthorShouldThrowException(){
+        Author author = new Author();
+        author.setId(EXISTS_AUTHOR_ID);
+
+        Game game = new Game();
+        game.setId(10L);
+        game.setTitle("Juego Test");
+
+        when(authorRepository.findById(EXISTS_AUTHOR_ID)).thenReturn(Optional.of(author));
+        when(gameRepository.findByAuthorId(EXISTS_AUTHOR_ID)).thenReturn(List.of(game));
+
+
+        assertThrows(NotDeleteableException.class,() ->{
+            authorService.delete(EXISTS_AUTHOR_ID);
+        });
+
+        verify(authorRepository,(times(2))).findById(EXISTS_AUTHOR_ID);
+        verify(gameRepository).findByAuthorId(EXISTS_AUTHOR_ID);
+        verify(authorRepository, never()).deleteById(any());
+    }
     @Test
     public void findAllShouldReturnAuthorsList() {
 

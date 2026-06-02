@@ -5,6 +5,7 @@ import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckObject;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.exceptions.NotValidClientNameException;
 import com.ccsw.tutorial.loan.LoanRepository;
 import com.ccsw.tutorial.loan.model.Loan;
@@ -71,9 +72,14 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public void delete(Long id) throws NoIdFoundException{
+    public void delete(Long id) throws NoIdFoundException, NotDeleteableException {
         if (this.getById(id) == null) {
             throw new NoIdFoundException();
+        }
+
+        DeleteCheckResponseDto deleteCheck = isDeleteable(id);
+        if(!deleteCheck.isCanDelete()){
+            throw new NotDeleteableException(deleteCheck.getReason());
         }
 
         this.clientRepository.deleteById(id);

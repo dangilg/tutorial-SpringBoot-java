@@ -4,6 +4,7 @@ import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.model.Game;
 import org.junit.jupiter.api.Test;
@@ -121,6 +122,25 @@ public class CategoryTest {
         verify(categoryRepository, never()).deleteById(any());
     }
 
+    @Test
+    public void deleteANotDeleteableCategoryShouldThrowException(){
+        Category category = new Category();
+        category.setId(EXISTS_CATEGORY_ID);
+
+        Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Juego");
+
+        when(categoryRepository.findById(EXISTS_CATEGORY_ID)).thenReturn(Optional.of(category));
+        when(gameRepository.findByCategoryId(EXISTS_CATEGORY_ID)).thenReturn(List.of(game));
+
+        assertThrows(NotDeleteableException.class,()->{
+            categoryService.delete(EXISTS_CATEGORY_ID);
+        });
+        verify(categoryRepository,times(2)).findById(EXISTS_CATEGORY_ID);
+        verify(gameRepository).findByCategoryId(EXISTS_CATEGORY_ID);
+        verify(categoryRepository,never()).deleteById(any());
+    }
     @Test
     public void getExistsCategoryIdShouldReturnCategory() {
 

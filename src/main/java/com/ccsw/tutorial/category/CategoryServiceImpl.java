@@ -5,6 +5,7 @@ import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckObject;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.model.Game;
 import jakarta.transaction.Transactional;
@@ -73,11 +74,15 @@ public class CategoryServiceImpl implements CategoryService {
      * {@inheritDoc}
      */
     @Override
-    public void delete(Long id) throws NoIdFoundException {
+    public void delete(Long id) throws NoIdFoundException, NotDeleteableException {
         if (this.get(id) == null) {
             throw new NoIdFoundException();
         }
 
+        DeleteCheckResponseDto deleteCheck = isDeleteable(id);
+        if(!deleteCheck.isCanDelete()){
+            throw  new NotDeleteableException(deleteCheck.getReason());
+        }
         this.categoryRepository.deleteById(id);
     }
 

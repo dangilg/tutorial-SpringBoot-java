@@ -5,6 +5,7 @@ import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.game.model.Game;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public interface CategoryService {
      *
      * @param id PK de la entidad
      * @param dto datos de la entidad
+     * @throws NoIdFoundException si la {@link Category} no existe
      */
     Category save(Long id, CategoryDto dto) throws NoIdFoundException;
 
@@ -42,8 +44,10 @@ public interface CategoryService {
      * Método para borrar una {@link Category}
      *
      * @param id PK de la entidad
+     * @throws NoIdFoundException si {@link Category} no existe
+     * @throws NotDeleteableException si la {@link Category} está en uso en algún {@link  Game}
      */
-    void delete(Long id) throws NoIdFoundException;
+    void delete(Long id) throws NoIdFoundException, NotDeleteableException;
 
 
     /**
