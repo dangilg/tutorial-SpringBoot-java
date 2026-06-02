@@ -81,10 +81,15 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository.deleteById(id);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DeleteCheckResponseDto isDeleteable(Long id){
+    public DeleteCheckResponseDto isDeleteable(Long id) throws NoIdFoundException{
 
+        if(categoryRepository.findById(id).isEmpty()){
+            throw new NoIdFoundException();
+        }
         List<Game> gamesInConflict = gameRepository.findByCategoryId(id);
         if(!gamesInConflict.isEmpty()){
             List<DeleteCheckObject> list = gamesInConflict.stream().map(g->new DeleteCheckObject(g.getId(),g.getTitle())).toList();

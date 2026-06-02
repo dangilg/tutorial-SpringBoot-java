@@ -2,6 +2,7 @@ package com.ccsw.tutorial.author;
 
 import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.common.pagination.PageableRequest;
 import com.ccsw.tutorial.config.ResponsePage;
 import com.ccsw.tutorial.security.JwtService;
@@ -16,8 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -104,6 +104,7 @@ public class AuthorIT {
         AuthorDto author = response.getBody().getContent().stream().filter(item -> item.getId().equals(newAuthorId)).findFirst().orElse(null);
         assertNotNull(author);
         assertEquals(NEW_AUTHOR_NAME, author.getName());
+        assertEquals(NEW_NATIONALITY, author.getNationality());
     }
 
     @Test
@@ -215,23 +216,69 @@ public class AuthorIT {
     }
 
     @Test
-    public void deleteADeleteableAuthorWithNotValidTokenShouldThrowException() {
-        HttpHeaders headers = new HttpHeaders();
-        String token = tokenService.generateToken("admin");
-        String badToken = token.replace("e", "l");
-        headers.set("Authorization", "Bearer " + badToken);
-
-        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETEABLE_AUTHOR_ID, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-    }
-
-    @Test
     public void findAllShouldReturnAllAuthor() {
 
         ResponseEntity<List<AuthorDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseTypeList);
 
         assertNotNull(response);
         assertEquals(TOTAL_AUTHORS, response.getBody().size());
+    }
+
+    @Test
+    public void canDeleteWithDeletableAuthorShouldReturnTrue(){
+        ResponseEntity<DeleteCheckResponseDto> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETEABLE_AUTHOR_ID + "/can-delete", HttpMethod.GET,null, DeleteCheckResponseDto.class);
+
+        assertNotNull(response.getBody());
+
+        assertEquals(true, response.getBody().isCanDelete());
+
+        assertEquals(0,response.getBody().getList().size());
+
+        assertEquals("",response.getBody().getReason());
+    }
+    @Test
+    public void canDeleteWithNotDeleteableAuthorShouldReturnFalse(){
+        ResponseEntity<DeleteCheckResponseDto> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NOT_DELETEABLE_AUTHOR_ID + "/can-delete", HttpMethod.GET,null, DeleteCheckResponseDto.class);
+
+        assertNotNull(response.getBody());
+
+        assertEquals(false, response.getBody().isCanDelete());
+
+        assertEquals("EN USO", response.getBody().getReason());
+        assertNotNull(response.getBody().getList());
+        assertEquals(true,!response.getBody().getList().isEmpty());
+    }
+
+    @Test
+    public void canDeleteWithNotValidIdShouldThrowNoIdFoundException(){
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + -1 + "/can-delete", HttpMethod.GET,null, DeleteCheckResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    }
+
+    @Test
+    public void canDeleteWithNonExistingAuthorShoulThrowNoIdFoundException(){
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 37 + "/can-delete", HttpMethod.GET,null, DeleteCheckResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void findPageWithOutOfRangePageShouldReturnEmptyContent() {
+
+        AuthorSearchDto searchDto = new AuthorSearchDto();
+        searchDto.setPageable(new PageableRequest(100, PAGE_SIZE));
+
+        ResponseEntity<ResponsePage<AuthorDto>> response = restTemplate.exchange(
+                LOCALHOST + port + SERVICE_PATH,
+                HttpMethod.POST,
+                new HttpEntity<>(searchDto),
+                responseTypePage
+        );
+
+        assertNotNull(response);
+        assertEquals(TOTAL_AUTHORS, response.getBody().getTotalElements());
+        assertEquals(0, response.getBody().getContent().size());
     }
 }

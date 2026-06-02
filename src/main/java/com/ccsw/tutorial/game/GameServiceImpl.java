@@ -3,6 +3,7 @@ package com.ccsw.tutorial.game;
 import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotValidDtoException;
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 import com.ccsw.tutorial.author.AuthorService;
@@ -40,6 +41,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<Game> find(String title, Long idCategory) {
 
+        if (title != null) {
+            title = title.toLowerCase();
+        }
         GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
         GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
 
@@ -52,7 +56,7 @@ public class GameServiceImpl implements GameService {
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, GameDto dto) throws NoIdFoundException {
+    public void save(Long id, GameDto dto) throws NoIdFoundException, NotValidDtoException {
 
         Game game;
 
@@ -66,6 +70,9 @@ public class GameServiceImpl implements GameService {
             throw new NoIdFoundException();
         }
         BeanUtils.copyProperties(dto, game, "id", "author", "category");
+        if(dto.getAuthor()==null||dto.getCategory()==null){
+            throw new NotValidDtoException();
+        }
         Author author = authorService.get(dto.getAuthor().getId());
         //para evitar tener q esperar en caso de q el author ya sea null
         if (author == null) {

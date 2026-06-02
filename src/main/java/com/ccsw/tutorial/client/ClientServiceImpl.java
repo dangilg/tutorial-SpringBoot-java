@@ -26,18 +26,26 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     LoanRepository loanRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Client getById(Long id){
         return this.clientRepository.findById(id).orElse(null);
     }
 
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Client> findAll(){
         return (List<Client>) this.clientRepository.findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Client save(Long id, ClientDto dto) throws NoIdFoundException,NotValidClientNameException {
         Client client;
@@ -59,6 +67,9 @@ public class ClientServiceImpl implements ClientService {
         return client;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long id) throws NoIdFoundException{
         if (this.getById(id) == null) {
@@ -69,8 +80,15 @@ public class ClientServiceImpl implements ClientService {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DeleteCheckResponseDto isDeleteable(Long id){
+    public DeleteCheckResponseDto isDeleteable(Long id)throws NoIdFoundException{
+        if(clientRepository.findById(id).isEmpty()){
+            throw new NoIdFoundException();
+        }
+
         LocalDate today = LocalDate.now();
         List<Loan> conflictLoans = loanRepository.findByClientId(id)
                 .stream()

@@ -3,6 +3,10 @@ package com.ccsw.tutorial.common.criteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
+/**
+ * @author dgilguti
+ * @param <T>
+ */
 public class GenericSpecification<T> implements  Specification<T>{
     private static final long serialVersionUID =1L;
 

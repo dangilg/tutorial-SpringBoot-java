@@ -2,6 +2,10 @@ package com.ccsw.tutorial.category;
 
 import com.ccsw.tutorial.category.model.Category;
 import com.ccsw.tutorial.category.model.CategoryDto;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
+import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.game.GameRepository;
+import com.ccsw.tutorial.game.model.Game;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,6 +25,9 @@ public class CategoryTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private GameRepository gameRepository;
 
     @InjectMocks
     private CategoryServiceImpl categoryService;
@@ -73,6 +80,22 @@ public class CategoryTest {
     }
 
     @Test
+    public void saveNotExistingIdShouldThrowException() {
+
+        CategoryDto dto = new CategoryDto();
+        dto.setName(CATEGORY_NAME);
+
+        when(categoryRepository.findById(NOT_EXISTS_CATEGORY_ID)).thenReturn(Optional.empty());
+
+        assertThrows(NoIdFoundException.class, () -> {
+            categoryService.save(NOT_EXISTS_CATEGORY_ID, dto);
+        });
+
+        verify(categoryRepository).findById(NOT_EXISTS_CATEGORY_ID);
+        verify(categoryRepository, never()).save(any());
+    }
+
+    @Test
     public void deleteExistsCategoryIdShouldDelete() throws Exception {
 
         Category category = mock(Category.class);
@@ -86,6 +109,19 @@ public class CategoryTest {
     public static final Long NOT_EXISTS_CATEGORY_ID = 0L;
 
     @Test
+    public void deleteNotExistingIdShouldThrowException() {
+
+        when(categoryRepository.findById(NOT_EXISTS_CATEGORY_ID)).thenReturn(Optional.empty());
+
+        assertThrows(NoIdFoundException.class, () -> {
+            categoryService.delete(NOT_EXISTS_CATEGORY_ID);
+        });
+
+        verify(categoryRepository).findById(NOT_EXISTS_CATEGORY_ID);
+        verify(categoryRepository, never()).deleteById(any());
+    }
+
+    @Test
     public void getExistsCategoryIdShouldReturnCategory() {
 
         Category category = mock(Category.class);
@@ -95,7 +131,7 @@ public class CategoryTest {
         Category categoryResponse = categoryService.get(EXISTS_CATEGORY_ID);
 
         assertNotNull(categoryResponse);
-        assertEquals(EXISTS_CATEGORY_ID, category.getId());
+        assertEquals(EXISTS_CATEGORY_ID, categoryResponse.getId());
     }
 
     @Test
@@ -106,6 +142,58 @@ public class CategoryTest {
         Category category = categoryService.get(NOT_EXISTS_CATEGORY_ID);
 
         assertNull(category);
+    }
+
+    @Test
+    public void isDeleteableWithNotExistingIdShouldThrowException() {
+
+        when(categoryRepository.findById(NOT_EXISTS_CATEGORY_ID)).thenReturn(Optional.empty());
+
+        assertThrows(NoIdFoundException.class, () -> {
+            categoryService.isDeleteable(NOT_EXISTS_CATEGORY_ID);
+        });
+
+        verify(categoryRepository).findById(NOT_EXISTS_CATEGORY_ID);
+        verify(gameRepository, never()).findByCategoryId(any());
+    }
+
+    @Test
+    public void isDeleteableWithNoGamesShouldReturnTrue() {
+
+        Category category = new Category();
+        category.setId(EXISTS_CATEGORY_ID);
+
+        when(categoryRepository.findById(EXISTS_CATEGORY_ID)).thenReturn(Optional.of(category));
+        when(gameRepository.findByCategoryId(EXISTS_CATEGORY_ID)).thenReturn(List.of());
+
+        DeleteCheckResponseDto result = categoryService.isDeleteable(EXISTS_CATEGORY_ID);
+
+        assertNotNull(result);
+        assertTrue(result.isCanDelete());
+        assertEquals("", result.getReason());
+        assertTrue(result.getList().isEmpty());
+    }
+
+    @Test
+    public void isDeleteableWithGamesShouldReturnFalse() {
+
+        Category category = new Category();
+        category.setId(EXISTS_CATEGORY_ID);
+
+        Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Juego");
+
+        when(categoryRepository.findById(EXISTS_CATEGORY_ID)).thenReturn(Optional.of(category));
+        when(gameRepository.findByCategoryId(EXISTS_CATEGORY_ID)).thenReturn(List.of(game));
+
+        DeleteCheckResponseDto result = categoryService.isDeleteable(EXISTS_CATEGORY_ID);
+
+        assertNotNull(result);
+        assertFalse(result.isCanDelete());
+        assertEquals("EN USO", result.getReason());
+        assertFalse(result.getList().isEmpty());
+        assertEquals(1, result.getList().size());
     }
 
 }

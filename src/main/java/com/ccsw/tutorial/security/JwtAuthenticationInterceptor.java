@@ -13,6 +13,10 @@ import java.io.IOException;
 import com.ccsw.tutorial.security.config.PublicRoutesConfig;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+/**
+ * @author dgilguti
+ * Clase que implementa el interceptor para la verificación de la validez del token JWT
+ */
 @Component
 public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
 
@@ -25,12 +29,24 @@ public class JwtAuthenticationInterceptor extends OncePerRequestFilter {
     @Autowired
     HandlerExceptionResolver handlerExceptionResolver;
 
+    /**
+     * Implementación de cuando no debe filtrar
+     * @param request
+     * @return boolean
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request){
         String path = request.getRequestURI();
         return path.startsWith("/h2-console");
     }
 
+    /**
+     * Aplica el filtro.
+     * Si se detecta una excepción se lanza una genérica para que el {@link com.ccsw.tutorial.exceptions.GlobalExceptionHandler} la detecte
+     * @param request
+     * @param response
+     * @param filterChain
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         try{

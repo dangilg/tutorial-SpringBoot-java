@@ -5,6 +5,7 @@ import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.author.model.AuthorSearchDto;
 import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.game.model.Game;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -55,5 +56,11 @@ public interface AuthorService {
      */
     List<Author> findAll();
 
+    /**
+     * Verifica si el {@link Author} dado por su PK se puede borrar o no
+     * @param id PK de la entidad
+     * @return {@link DeleteCheckResponseDto} verdadera si se puede borrar.
+     * {@link DeleteCheckResponseDto} falsa y la lista de {@link Game} en los que está si no se puede borrar
+     */
     DeleteCheckResponseDto isDeleteable(Long id);
 }

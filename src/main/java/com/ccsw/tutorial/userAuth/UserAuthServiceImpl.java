@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * @author dgilguti
+ */
 @Service
 @Transactional
 public class UserAuthServiceImpl implements UserAuthService {
@@ -23,6 +26,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    /**
+     *{@inheritDoc}
+     */
     public User save(UserDto dto) throws NotValidUsernameException {
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -37,6 +43,9 @@ public class UserAuthServiceImpl implements UserAuthService {
         return user;
     }
 
+    /**
+     *{@inheritDoc}
+     */
     public User getUser(String username) throws NotFoundUserException {
 
         Optional<User> userBD = userAuthRepository.findByUsername(username);
@@ -47,6 +56,9 @@ public class UserAuthServiceImpl implements UserAuthService {
         return userBD.get();
     }
 
+    /**
+     *{@inheritDoc}
+     */
     public void checkPassword(String passwordDB, String password) throws WrongPasswordException {
         if (!passwordEncoder.matches(password, passwordDB)) {
             throw new WrongPasswordException();

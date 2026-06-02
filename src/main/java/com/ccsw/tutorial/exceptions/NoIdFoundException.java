@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NoIdFoundException extends RuntimeException {
 
     public NoIdFoundException() {
-        super("OPERATION WITH NO EXISTING ID");
-        String message = "OPERATION WITH NO EXISTING ID";
+        super("OPERATION WITH NOT VALID ID");
+        String message = "OPERATION WITH NO VALID ID";
 
         System.err.println(message);
     }

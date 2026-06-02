@@ -41,11 +41,8 @@ public class GameController {
     @Operation(summary = "Find", description = "Method that return a filtered list of Games")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<GameDto> find(@RequestParam(value = "title", required = false) String title, @RequestParam(value = "idCategory", required = false) Long idCategory) {
-        String lowerCaseTittle = null;
-        if (title != null) {
-            lowerCaseTittle = title.toLowerCase();
-        }
-        List<Game> games = gameService.find(lowerCaseTittle, idCategory);
+
+        List<Game> games = gameService.find(title, idCategory);
 
         return games.stream().map(e -> mapper.map(e, GameDto.class)).collect(Collectors.toList());
     }

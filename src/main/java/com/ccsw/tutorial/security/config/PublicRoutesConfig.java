@@ -17,7 +17,8 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 /**
- * Clase que implementa la lista de Rutas Públicas
+ * @author dgilguti
+ * Clase que implementa la lista de Rutas Públicas, es decir, aquellas que no necesitan un token JWT válido para ser llamadas
  */
 @Component
 public class PublicRoutesConfig {
@@ -43,20 +44,31 @@ PathPatternParser patternParser;
             ,
             //Client
             new PublicRoute(GET,"/client"),
-            new PublicRoute(GET,"/client/can-delete"),
+            new PublicRoute(GET,"/client/{id}/can-delete"),
 
             //Loan
             new PublicRoute(POST, "/loan"),
             new PublicRoute(GET,"/loan/count"),
-            new PublicRoute(GET,"/loan/lastId")
+            new PublicRoute(GET,"/loan/lastId"),
+            new PublicRoute(GET,"/loan/{id}/can-delete")
 
 
     );
 
+    /**
+     *
+     * @return {@link List} de {@link PublicRoute}
+     */
     public List<PublicRoute> getPublicRoutes() {
         return publicRoutes;
     }
 
+    /**
+     * Verifica si una petición, según su metodo y su path es publica o no
+     * @param methodStr metodo de la petición
+     * @param path Ruta
+     * @return
+     */
     public boolean isPublic(String methodStr, String path){
         HttpMethod method = HttpMethod.valueOf(methodStr);
 

@@ -19,6 +19,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * @author dgilguti
+ *
+ * Clase que implementa las configuraciones de seguridad de las llamadas a la API, para que apliquen el interceptor
+ */
 @Configuration
 @EnableWebSecurity
 
@@ -30,7 +35,9 @@ public class SecurityConfig {
     @Autowired
     private PublicRoutesConfig publicRoutesConfig;
 
-
+    /**
+     * Clase que llama al interceptor para verificar la validez del token
+     */
     @Bean
     public SecurityFilterChain securityfilterChain(HttpSecurity http) throws Exception {
 
@@ -48,7 +55,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-
+    /**
+     * Configuracion para evitar fallos de CORS
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 

@@ -91,10 +91,17 @@ public class AuthorServiceImpl implements AuthorService {
         return (List<Author>) this.authorRepository.findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DeleteCheckResponseDto isDeleteable(Long id){
+    public DeleteCheckResponseDto isDeleteable(Long id) throws NoIdFoundException{
 
+        if(authorRepository.findById(id).isEmpty()){
+            throw new NoIdFoundException();
+        }
         List<Game> gamesInConflict = gameRepository.findByAuthorId(id);
+
         if(!gamesInConflict.isEmpty()){
             List<DeleteCheckObject> list = gamesInConflict.stream().map(g->new DeleteCheckObject(g.getId(),g.getTitle())).toList();
             return new DeleteCheckResponseDto(false,"EN USO", list);

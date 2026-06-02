@@ -30,12 +30,12 @@ INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
 );
 
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-2,1,'2026-05-25','2026-05-28'
+2,1,'2026-05-30','2026-06-02'
 );
 
 -- futuro
 INSERT INTO loan(game_id,client_id,start_date,end_date) VALUES (
-1,2,'2026-05-31','2026-06-02'
+1,2,'2026-06-10','2026-06-12'
 );
 
 -- pasado
