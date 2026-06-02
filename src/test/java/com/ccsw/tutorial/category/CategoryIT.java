@@ -45,7 +45,7 @@ public class CategoryIT {
 
         ResponseEntity<List<CategoryDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
 
-        assertNotNull(response);
+        assertNotNull(response.getBody());
         assertEquals(4, response.getBody().size());
     }
 
@@ -58,7 +58,10 @@ public class CategoryIT {
         CategoryDto dto = new CategoryDto();
         dto.setName(NEW_CATEGORY_NAME);
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, getHeaders()), Void.class);
+        ResponseEntity<CategoryDto> saveResponse = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto, getHeaders()), CategoryDto.class);
+
+        assertNotNull(saveResponse.getBody());
+        assertEquals(NEW_CATEGORY_NAME,saveResponse.getBody().getName());
 
         ResponseEntity<List<CategoryDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
         assertNotNull(response);
@@ -85,6 +88,8 @@ public class CategoryIT {
 
         CategoryDto categorySearch = response.getBody().stream().filter(item -> item.getId().equals(MODIFY_CATEGORY_ID)).findFirst().orElse(null);
         assertNotNull(categorySearch);
+        assertNotNull(categorySearch.getId());
+        assertEquals(MODIFY_CATEGORY_ID,categorySearch.getId());
         assertEquals(NEW_CATEGORY_NAME, categorySearch.getName());
     }
 
@@ -167,4 +172,53 @@ public class CategoryIT {
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + "1", HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
+
+    @Test
+    public void canDeleteWithDeleteableCategoryShouldReturnTrue() {
+
+        ResponseEntity<DeleteCheckResponseDto> response =
+                restTemplate.exchange(
+                        LOCALHOST + port + SERVICE_PATH + "/" + DELETE_CATEGORY_ID + "/can-delete",
+                        HttpMethod.GET,
+                        null,
+                        DeleteCheckResponseDto.class
+                );
+
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isCanDelete());
+        assertEquals("", response.getBody().getReason());
+        assertTrue(response.getBody().getList().isEmpty());
+    }
+
+    @Test
+    public void canDeleteWithNotDeleteableCategoryShouldReturnFalse() {
+
+        ResponseEntity<DeleteCheckResponseDto> response =
+                restTemplate.exchange(
+                        LOCALHOST + port + SERVICE_PATH + "/1/can-delete",
+                        HttpMethod.GET,
+                        null,
+                        DeleteCheckResponseDto.class
+                );
+
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isCanDelete());
+        assertEquals("EN USO", response.getBody().getReason());
+        assertFalse(response.getBody().getList().isEmpty());
+    }
+
+    @Test
+    public void canDeleteWithNonExistingIdShouldReturnNotFound() {
+
+        ResponseEntity<?> response =
+                restTemplate.exchange(
+                        LOCALHOST + port + SERVICE_PATH + "/999/can-delete",
+                        HttpMethod.GET,
+                        null,
+                        DeleteCheckResponseDto.class
+                );
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
 }

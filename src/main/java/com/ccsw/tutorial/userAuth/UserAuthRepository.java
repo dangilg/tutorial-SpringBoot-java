@@ -7,5 +7,10 @@ import java.util.Optional;
 
 public interface UserAuthRepository extends CrudRepository<User, Long> {
 
+    /**
+     * Busca un {@link User} según su username
+     * @param username nombre del usuario
+     * @return {@link Optional} de {@link User}
+     */
     Optional<User> findByUsername(String username);
 }

@@ -4,7 +4,11 @@ import com.ccsw.tutorial.client.ClientRepository;
 import com.ccsw.tutorial.client.model.Client;
 import com.ccsw.tutorial.common.criteria.GenericSpecification;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
+import com.ccsw.tutorial.common.deleteCheck.DeleteCheckResponseDto;
 import com.ccsw.tutorial.common.pagination.PageableRequest;
+import com.ccsw.tutorial.exceptions.NoIdFoundException;
+import com.ccsw.tutorial.exceptions.NotDeleteableException;
+import com.ccsw.tutorial.exceptions.NotValidDtoException;
 import com.ccsw.tutorial.exceptions.NotValidLoanException;
 import com.ccsw.tutorial.game.GameRepository;
 import com.ccsw.tutorial.game.model.Game;
@@ -25,6 +29,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author dgilguti
+ */
 @Service
 @Transactional
 public class LoanServiceImp implements LoanService{
@@ -41,7 +48,9 @@ public class LoanServiceImp implements LoanService{
     @Autowired
     ClientRepository clientRepository;
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getLastId(){
         long lastDbId = loanRepository.getLastId();
@@ -51,21 +60,84 @@ public class LoanServiceImp implements LoanService{
         return lastId;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void delete(Long id){
+    public DeleteCheckResponseDto isDeleteable(Long id){
+        if(id==null){
+            throw  new NoIdFoundException();
+        }
+        Loan loan =loanRepository.findById(id).orElse(null);
+        if(loan ==null){
+            throw new NoIdFoundException();
+        }
+        //DeleteCheckResponseDto response = new DeleteCheckResponseDto();
+        LocalDate today = LocalDate.now();
+        LocalDate loanStartDate = loan.getStartDate();
+        LocalDate loanEndDate = loan.getEndDate();
+
+        if(
+                (
+                    loanStartDate.isEqual(today)
+                    ||
+                    loanStartDate.isBefore(today)
+                )
+                &&
+                (
+                    loanEndDate.isEqual(today)
+                    ||
+                    loanEndDate.isAfter(today)
+                )
+        )
+        {
+            return new DeleteCheckResponseDto(
+                    false,
+                    "EN PROCESO",
+                    List.of()
+            );
+        }
+        return new DeleteCheckResponseDto(
+                true,
+                "",
+                List.of()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(Long id) throws NoIdFoundException{
+
+        if(id == null||!loanRepository.existsById(id)){
+            throw new NoIdFoundException();
+        }
+        DeleteCheckResponseDto deleteable = isDeleteable(id);
+        if(!deleteable.isCanDelete()){
+            throw new NotDeleteableException(deleteable.getReason());
+        }
         loanRepository.deleteById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<Loan> findPageFiltered(PageFilterDto dto) {
+
         FilterDataModel filters = dto.getFilters();
         PageableRequest pageable = dto.getPageable();
+
+        if(filters ==null||pageable==null){
+            throw new NotValidDtoException();
+        }
 
         GenericSpecification<Loan> clientSpec = new GenericSpecification<Loan>(new SearchCriteria("client.id",":",filters.getClientId()));
         GenericSpecification<Loan> gameSpec = new GenericSpecification<Loan>(new SearchCriteria("game.id",":",filters.getGameId()));
 
         Date referenceDate = null;
-        //todo -> revisar excepciones posibles en un TryCatch
+
         if(filters.getDate()!=null){
              referenceDate= Date.valueOf(filters.getDate());
         }
@@ -78,34 +150,56 @@ public class LoanServiceImp implements LoanService{
         return this.loanRepository.findAll(spec, pageable.getPageable());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AvailableResponseDto calculateAvailability(AvailableRequestDto dto){
+
         AvailableResponseDto response = new AvailableResponseDto();
         LocalDate start = dto.getStartDate();
         LocalDate end = dto.getEndDate();
         Long loanId = dto.getLoanId();
-        List<Game> games = resolveGames(loanId,start,end);
-        List<Client> clients = resolveClients(loanId,start,end);
 
+        if(loanId!=null&&!loanRepository.existsById(loanId)){
+            throw new NoIdFoundException();
+        }
 
+        /*No se si debería comprobar aquí tambien si:
+        -startDate > endDate
+         */
 
+        try {
+            List<Game> games = resolveGames(loanId, start, end);
+            List<Client> clients = resolveClients(loanId, start, end);
 
-        List<Interval> startIntervals = resolveStartIntervals(dto);
-        List<Interval> endIntervals = resolveEndIntervals(dto);
+            List<Interval> startIntervals = resolveStartIntervals(dto);
+            List<Interval> endIntervals = resolveEndIntervals(dto);
 
-        response.setClients(clients);
-        response.setGames(games);
-        response.setValidStartDates(startIntervals);
-        response.setValidEndDates(endIntervals);
+            response.setClients(clients);
+            response.setGames(games);
+            response.setValidStartDates(startIntervals);
+            response.setValidEndDates(endIntervals);
 
-        return response;
+            return response;
+        }
+        catch (Exception e){
+            throw new NotValidDtoException();
+        }
+
 
 
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void save(Long id, AvailableRequestDto dto){
+        if(dto==null){
+            throw new NotValidDtoException();
+        }
         Loan loan;
         if(id==null){
             loan = new Loan();

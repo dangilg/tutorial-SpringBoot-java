@@ -20,6 +20,11 @@ public class tokenAuthController {
     @Autowired
     JwtService tokenService;
 
+    /**
+     * Valida si un token sigue siendo válido
+     * @param token Token JWT
+     * @return OK si es válido, {@link org.springframework.web.client.HttpClientErrorException.Unauthorized} si no
+     */
     @Operation(summary = "check if a token is valid", description = "method that check if a token gived in params is valid")
     @RequestMapping(path = "/validateToken", method = RequestMethod.GET)
     public ResponseEntity<Void> validateToken(@RequestHeader("Authorization") String token) {

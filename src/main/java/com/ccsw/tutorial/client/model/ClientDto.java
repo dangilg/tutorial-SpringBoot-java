@@ -1,5 +1,8 @@
 package com.ccsw.tutorial.client.model;
 
+/**
+ * @author dgilguti
+ */
 public class ClientDto {
 
     private Long id;

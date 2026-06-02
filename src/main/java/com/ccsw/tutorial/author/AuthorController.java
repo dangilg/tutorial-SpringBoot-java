@@ -8,6 +8,7 @@ import com.ccsw.tutorial.exceptions.NoIdFoundException;
 import com.ccsw.tutorial.exceptions.NotDeleteableException;
 import com.ccsw.tutorial.exceptions.NotValidTokenException;
 import com.ccsw.tutorial.game.GameRepository;
+import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,9 +40,6 @@ public class AuthorController {
     ModelMapper mapper;
 
     @Autowired
-    GameRepository gameRepository;
-
-    @Autowired
     JwtService tokenService;
 
     /**
@@ -68,9 +66,8 @@ public class AuthorController {
     @Operation(summary = "Save or Update", description = "Method that saves or updates a Author")
     @RequestMapping(path = { "", "/{id}" }, method = RequestMethod.PUT)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token") })
-    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException {
-        String token = authorization.substring(7);
-        this.tokenService.isTokenValid(token);
+    public void save(@PathVariable(name = "id", required = false) Long id, @RequestBody AuthorDto dto) throws NoIdFoundException, NotValidTokenException {
+
         this.authorService.save(id, dto);
     }
 
@@ -83,12 +80,11 @@ public class AuthorController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     @ApiResponses({ @ApiResponse(responseCode = "404", description = "category doesn't exists"), @ApiResponse(responseCode = "401", description = "invalid token"),
             @ApiResponse(responseCode = "409", description = "cant delete an Author in use") })
-    public void delete(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorization) throws NoIdFoundException, NotValidTokenException, NotDeleteableException {
-        String token = authorization.substring(7);
-        this.tokenService.isTokenValid(token);
+    public void delete(@PathVariable("id") Long id) throws NoIdFoundException, NotDeleteableException {
         if (!isDeleteable(id).isCanDelete()) {
             throw new NotDeleteableException(isDeleteable(id).getReason());
         }
+
         this.authorService.delete(id);
     }
 
@@ -106,14 +102,19 @@ public class AuthorController {
         return authors.stream().map(e -> mapper.map(e, AuthorDto.class)).collect(Collectors.toList());
     }
 
+    /**
+     * Devuelve una respuesta del tipo {@link DeleteCheckResponseDto} para ver si el {@link  Author} se puede borrar o no
+     * @param id PK de la entidad
+     * @return {@link DeleteCheckResponseDto} verdadera si es borrable.
+     *{@link DeleteCheckResponseDto} falsa y la lista de {@link Game} a los que pertenece
+     * @throws NoIdFoundException si el {@link Author} no existe en la BD
+     */
     @Operation(summary = "Can-Delete", description = "Method that check if a Category can be deleted")
     @RequestMapping(path = "/{id}/can-delete", method = RequestMethod.GET)
-    public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) {
-        if (this.gameRepository.existsByAuthorId(id)) {
-            return new DeleteCheckResponseDto(false, "IN_USE");
-        } else {
-            return new DeleteCheckResponseDto(true, "");
-        }
+    public DeleteCheckResponseDto isDeleteable(@PathVariable("id") Long id) throws NoIdFoundException {
+
+        return authorService.isDeleteable(id);
+
     }
 
 }

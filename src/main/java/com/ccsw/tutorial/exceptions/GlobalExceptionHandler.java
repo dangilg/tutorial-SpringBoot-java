@@ -1,13 +1,15 @@
 package com.ccsw.tutorial.exceptions;
 
 import com.ccsw.tutorial.exceptions.model.ErrorResponseDto;
-import org.apache.coyote.Response;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.context.request.WebRequest;
 
+/**
+ * @author dgilguti
+ * Clase que gestiona las excepciones y crea un {@link ErrorResponseDto} con un {@link HttpStatus} según la excepción
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -70,5 +72,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleNotValidLoanException(NotValidLoanException exception){
         ErrorResponseDto response = new ErrorResponseDto(HttpStatus.CONFLICT.value(),exception.getMessage());
         return  new ResponseEntity<>(response,HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotValidDtoException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotValidDto(NotValidDtoException exception){
+        ErrorResponseDto response = new ErrorResponseDto(HttpStatus.FORBIDDEN.value(),exception.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
     }
 }
