@@ -34,7 +34,7 @@ If you manually switch to a different parent and actually want the inheritance, 
 - Manejo de *isDeleteable* mediante su propio DTO. [DeleteCheck](./src/main/java/com/ccsw/tutorial/common/deleteCheck/)
 - Manejo de errores mediante un **GlobalExceptionHandler** y *Excepciones propias* para los distintos errores según las Reglas de Negocio. [ExceptionHandler](./src/main/java/com/ccsw/tutorial/exceptions/) 
 - Para los filtros, se genereliza el *GameSpecification* a un *GenericSpecification*. [Criteria](./src/main/java/com/ccsw/tutorial/common/criteria/).
-- 
+  
 ### Autor
 - Ninguna modificación.
 
